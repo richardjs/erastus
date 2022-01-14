@@ -36,26 +36,26 @@ int main()
     // Worker height derivation
     {
         State_new(&state);
-        state.workers[PLAYER_1][0] = 0;
-        state.workers[PLAYER_1][1] = 4;
-        state.workers[PLAYER_2][0] = 8;
-        state.workers[PLAYER_2][1] = 12;
+        state.workers[P1][0] = 0;
+        state.workers[P1][1] = 4;
+        state.workers[P2][0] = 8;
+        state.workers[P2][1] = 12;
         state.buildings[0] = 1<<0;
         state.buildings[1] = 1<<4;
         state.buildings[2] = 1<<8;
         state.buildings[3] = 1<<12;
 
         State_derive_worker_heights(&state);
-        if (state.worker_heights[PLAYER_1][0] != 1) {
+        if (state.worker_heights[P1][0] != 1) {
             printf("Incorrect derived height for 0: %d\n", state.worker_heights[0][0]);
         }
-        if (state.worker_heights[PLAYER_1][1] != 2) {
+        if (state.worker_heights[P1][1] != 2) {
             printf("Incorrect derived height for 1: %d\n", state.worker_heights[0][1]);
         }
-        if (state.worker_heights[PLAYER_2][0] != 3) {
+        if (state.worker_heights[P2][0] != 3) {
             printf("Incorrect derived height for 2: %d\n", state.worker_heights[1][0]);
         }
-        if (state.worker_heights[PLAYER_2][1] != 4) {
+        if (state.worker_heights[P2][1] != 4) {
             printf("Incorrect derived height for 3: %d\n", state.worker_heights[1][1]);
         }
     }
@@ -67,10 +67,10 @@ int main()
         if (!State_is_start_phase(&state)) {
             printf("Think start phase isn't start phase\n");
         }
-        state.workers[PLAYER_1][0] = 0;
-        state.workers[PLAYER_1][1] = 1;
-        state.workers[PLAYER_2][0] = 2;
-        state.workers[PLAYER_2][1] = 4;
+        state.workers[P1][0] = 0;
+        state.workers[P1][1] = 1;
+        state.workers[P2][0] = 2;
+        state.workers[P2][1] = 4;
         if (State_is_start_phase(&state)) {
             printf("Think not start phase is start phase\n");
         }
@@ -95,6 +95,7 @@ int main()
         }
     }
 
+    State_new(&state);
 
     printf("Done!\n");
 

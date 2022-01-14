@@ -4,7 +4,7 @@
 
 bool State_is_start_phase(const struct State *state)
 {
-    return state->workers[PLAYER_2][0] == state->workers[PLAYER_2][1];
+    return state->workers[P2][0] == state->workers[P2][1];
 }
 
 
@@ -39,7 +39,7 @@ void State_derive_worker_heights(struct State *state)
 void State_derive_start_actions(struct State *state)
 {
     // P1 worker placements
-    if (state->workers[PLAYER_1][0] == state->workers[PLAYER_1][1]) {
+    if (state->workers[P1][0] == state->workers[P1][1]) {
         for (int pos1 = 0; pos1 < 25; pos1++) {
             for (int pos2 = 0; pos2 < 25; pos2++) {
                 if (pos1 == pos2) continue;
@@ -51,16 +51,16 @@ void State_derive_start_actions(struct State *state)
     }
 
     // P2 worker placements
-    if (state->workers[PLAYER_2][0] == state->workers[PLAYER_2][1]) {
+    if (state->workers[P2][0] == state->workers[P2][1]) {
         for (int pos1 = 0; pos1 < 25; pos1++) {
-            if (pos1 == state->workers[PLAYER_1][0] ||
-                    pos1 == state->workers[PLAYER_1][1]) {
+            if (pos1 == state->workers[P1][0] ||
+                    pos1 == state->workers[P1][1]) {
                 continue;
             }
             for (int pos2 = 0; pos2 < 25; pos2++) {
                 if (pos1 == pos2) continue;
-                if (pos2 == state->workers[PLAYER_1][0] ||
-                        pos2 == state->workers[PLAYER_1][1]) {
+                if (pos2 == state->workers[P1][0] ||
+                        pos2 == state->workers[P1][1]) {
                     continue;
                 }
 

@@ -10,7 +10,7 @@
 #define MAX_ACTIONS 600
 
 
-enum Player {PLAYER_1=0, PLAYER_2};
+enum Player {P1=0, P2};
 
 
 struct Action {
@@ -33,8 +33,10 @@ struct State {
 };
 
 
-void State_new_game(struct State *state);
+void State_new(struct State *state);
 void State_derive(struct State *state);
+
+void State_act(struct State *state, const struct Action *action);
 
 void State_print(const struct State *state);
 void State_printDebug(const struct State *state);
