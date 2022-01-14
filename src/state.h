@@ -6,7 +6,8 @@
 #include <stdint.h>
 
 
-#define MAX_ACTIONS 128
+// This could be 128 except for start places
+#define MAX_ACTIONS 600
 
 
 enum Player {PLAYER_1=0, PLAYER_2};
@@ -27,7 +28,7 @@ struct State {
 
     // Derived information
     struct Action actions[MAX_ACTIONS];
-    uint_fast8_t actionCount;
+    uint_fast16_t actionCount;
     uint_fast8_t worker_heights[2][2];
 };
 
@@ -37,5 +38,6 @@ void State_derive(struct State *state);
 
 void State_print(const struct State *state);
 void State_printDebug(const struct State *state);
+
 
 #endif

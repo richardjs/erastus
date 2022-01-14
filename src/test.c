@@ -15,9 +15,9 @@ int main()
     struct State state;
 
 
-    // Test height calculation
+    // Height calculation
     {
-        State_new_game(&state);
+        State_new(&state);
         int height = State_height_at(&state, 0);
         if (height != 0) {
             printf("Incorrect height calculation for ground: %d\n", height);
@@ -33,9 +33,9 @@ int main()
     }
 
 
-    // Test worker height derivation
+    // Worker height derivation
     {
-        State_new_game(&state);
+        State_new(&state);
         state.workers[PLAYER_1][0] = 0;
         state.workers[PLAYER_1][1] = 4;
         state.workers[PLAYER_2][0] = 8;
@@ -61,9 +61,9 @@ int main()
     }
 
 
-    // Test start phase calculation
+    // Start phase calculation
     {
-        State_new_game(&state);
+        State_new(&state);
         if (!State_is_start_phase(&state)) {
             printf("Think start phase isn't start phase\n");
         }
@@ -75,6 +75,26 @@ int main()
             printf("Think not start phase is start phase\n");
         }
     }
+
+
+    // Place actions
+    {
+        State_new(&state);
+        if (state.actionCount != 600) {
+            printf("Incorret number of P1 start places: %d\n", state.actionCount);
+        }
+
+        State_act(&state, &state.actions[0]);
+        if (state.actionCount != 506) {
+            printf("Incorret number of P2 start places: %d\n", state.actionCount);
+        }
+
+        State_act(&state, &state.actions[0]);
+        if (State_is_start_phase(&state)) {
+            printf("Start phase after both sides have placed");
+        }
+    }
+
 
     printf("Done!\n");
 
