@@ -1,7 +1,7 @@
 CLAGS=-std=c99 -Wall -O3
 
 
-objects=state.o stateio.o
+objects=state.o stateio.o layout.o
 
 
 all: erastus

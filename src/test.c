@@ -1,5 +1,6 @@
 #include <stdio.h>
-
+#include "bitops.h"
+#include "layout.h"
 #include "state.h"
 
 
@@ -95,9 +96,7 @@ int main()
         }
     }
 
-    State_new(&state);
 
     printf("Done!\n");
-
     return 0;
 }
