@@ -8,6 +8,10 @@
 
 // This could be 128 except for start places
 #define MAX_ACTIONS 600
+#define ACTION_STRING_SIZE 9
+
+#define PLACE 26
+#define WIN 27
 
 
 enum Player {P1=0, P2};
@@ -28,8 +32,7 @@ struct State {
 
     // Derived information
     struct Action actions[MAX_ACTIONS];
-    uint_fast16_t actionCount;
-    uint_fast8_t worker_heights[2][2];
+    uint_fast16_t action_count;
 };
 
 
@@ -39,7 +42,7 @@ void State_derive(struct State *state);
 void State_act(struct State *state, const struct Action *action);
 
 void State_print(const struct State *state);
-void State_printDebug(const struct State *state);
+void Action_to_string(const struct Action *action, char *string);
 
 
 #endif

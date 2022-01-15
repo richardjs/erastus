@@ -6,7 +6,6 @@
 
 bool State_is_start_phase(const struct State *state);
 int State_height_at(const struct State *state, int pos);
-void State_derive_worker_heights(struct State *state);
 
 
 int main()
@@ -14,6 +13,7 @@ int main()
     printf("Erastus tests\n");
 
     struct State state;
+    char action_string[ACTION_STRING_SIZE];
 
 
     // Height calculation
@@ -34,34 +34,6 @@ int main()
     }
 
 
-    // Worker height derivation
-    {
-        State_new(&state);
-        state.workers[P1][0] = 0;
-        state.workers[P1][1] = 4;
-        state.workers[P2][0] = 8;
-        state.workers[P2][1] = 12;
-        state.buildings[0] = 1<<0;
-        state.buildings[1] = 1<<4;
-        state.buildings[2] = 1<<8;
-        state.buildings[3] = 1<<12;
-
-        State_derive_worker_heights(&state);
-        if (state.worker_heights[P1][0] != 1) {
-            printf("Incorrect derived height for 0: %d\n", state.worker_heights[0][0]);
-        }
-        if (state.worker_heights[P1][1] != 2) {
-            printf("Incorrect derived height for 1: %d\n", state.worker_heights[0][1]);
-        }
-        if (state.worker_heights[P2][0] != 3) {
-            printf("Incorrect derived height for 2: %d\n", state.worker_heights[1][0]);
-        }
-        if (state.worker_heights[P2][1] != 4) {
-            printf("Incorrect derived height for 3: %d\n", state.worker_heights[1][1]);
-        }
-    }
-
-
     // Start phase calculation
     {
         State_new(&state);
@@ -78,21 +50,56 @@ int main()
     }
 
 
-    // Place actions
+    // Start phase and basic actions
     {
         State_new(&state);
-        if (state.actionCount != 600) {
-            printf("Incorret number of P1 start places: %d\n", state.actionCount);
+        if (state.action_count != 600) {
+            printf("Incorret number of P1 start places: %d\n", state.action_count);
         }
 
         State_act(&state, &state.actions[0]);
-        if (state.actionCount != 506) {
-            printf("Incorret number of P2 start places: %d\n", state.actionCount);
+        if (state.action_count != 506) {
+            printf("Incorret number of P2 start places: %d\n", state.action_count);
         }
 
         State_act(&state, &state.actions[0]);
         if (State_is_start_phase(&state)) {
             printf("Start phase after both sides have placed");
+        }
+
+        if (state.action_count != 26) {
+            printf("Incorrect number of moves after start places");
+        }
+    }
+
+
+    // Basic win
+    {
+        State_new(&state);
+        for (int i = 0; i < 4; i++) {
+            state.workers[0][i] = i;
+        }
+        state.buildings[1] = 1;
+        state.buildings[2] = 1 << 5;
+
+        State_derive(&state);
+
+        State_print(&state);
+
+        bool win_found = false;
+        for (int i = 0; i < state.action_count; i++) {
+            Action_to_string(&state.actions[i], action_string);
+            printf("%s\n", action_string);
+
+            if (state.actions[i].build == WIN) {
+                if (state.actions[i].source != 0 || state.actions[i].dest != 5) {
+                    printf("Win found, but with wrong move");
+                }
+                win_found = true;
+            }
+        }
+        if (!win_found) {
+            printf("No win found on basic win test\n");
         }
     }
 
