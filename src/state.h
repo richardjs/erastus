@@ -42,6 +42,7 @@ void State_derive(struct State *state);
 void State_act(struct State *state, const struct Action *action);
 
 void State_print(const struct State *state);
+void State_print_debug(const struct State *state);
 void Action_to_string(const struct Action *action, char *string);
 
 

@@ -11,6 +11,7 @@ const char SPACE_STRINGS[25][3] = {
 };
 
 
+bool State_is_start_phase(const struct State *state);
 int State_height_at(const struct State *state, int pos);
 
 
@@ -23,7 +24,7 @@ void State_print(const struct State *state)
             int pos = 5*row + col;
 
             if (State_height_at(state, pos) == 4) {
-                fprintf(stderr, "|/|\\ ");
+                fprintf(stderr, "| === ");
                 continue;
             }
 
@@ -49,10 +50,10 @@ void State_print(const struct State *state)
                 fprintf(stderr, "|     ");
                 break;
             case 1:
-                fprintf(stderr, "|  I  ");
+                fprintf(stderr, "| I   ");
                 break;
             case 2:
-                fprintf(stderr, "| I I ");
+                fprintf(stderr, "| II  ");
                 break;
             case 3:
             case 4:
@@ -65,6 +66,15 @@ void State_print(const struct State *state)
         fprintf(stderr, "| - - + - - + - - + - - + - - |\n");
 	}
 }
+
+
+void State_print_debug(const struct State *state)
+{
+    State_print(state);
+    fprintf(stderr, "Start:\t\t%s\n", State_is_start_phase(state) ? "Y" : "N");
+    fprintf(stderr, "Actions:\t%d\n", state->action_count);
+}
+
 
 void Action_to_string(const struct Action *action, char *string)
 {
