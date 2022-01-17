@@ -123,16 +123,26 @@ void State_derive(struct State *state)
 
 void State_act(struct State *state, const struct Action *action)
 {
-    if (State_is_start_phase(state)) {
+    if (action->build == PLACE) {
         state->workers[state->turn][0] = action->source;
         state->workers[state->turn][1] = action->dest;
-
-        state->turn = !state->turn;
-
-        State_derive(state);
-
-        return;
+    } else {
+        // TODO we might could optimize this to save the reference to the worker
+        // and also maybe even not bother with turn, just looking for worker that
+        // matches action->source
+        int w;
+        for (w = 0; w < 2; w++) {
+            if (state->workers[state->turn][w] == action->source) break;
+        }
+        state->workers[state->turn][w] = action->dest;
+        if (action->build != WIN) {
+            int height = State_height_at(state, action->build);
+            state->buildings[height] |= 1 << action->build;
+        }
     }
+
+    state->turn = !state->turn;
+    State_derive(state);
 }
 
 
