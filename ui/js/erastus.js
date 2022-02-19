@@ -10,7 +10,10 @@ function cleanHash() {
 
 class Space extends React.Component {
     render() {
-        return e('button', {className: 'col space'}, this.props.notation);
+        let className = 'col space ';
+        className += ' level-' + this.props.level;
+
+        return e('button', {className: className});
     }
 }
 
@@ -22,14 +25,14 @@ class Board extends React.Component {
             let row = [];
             for (let j = 0; j < 5; j++) {
                 row.push(e(Space, {key: j,
-                    notation: this.props.notation[1 + 5*i + j],
+                    level: parseInt(this.props.notation[1 + 5*i + j]),
                 }));
             }
 
             rows.push(e('div', {key: i, className: 'row'}, row));
         }
 
-        return e('div', null, rows);
+        return e('div', {className: 'board'}, rows);
     }
 }
 

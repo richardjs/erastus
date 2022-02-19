@@ -1,3 +1,37 @@
 .container {
     max-width: 500px;
 }
+
+.board {
+    margin-top: 20px;
+}
+
+.space {
+    border: none;
+    border: 1px solid;
+}
+
+.level-0 {
+    background: #fff;
+    border-color: #ccc;
+}
+
+.level-1 {
+    background: #8c8;
+    border-color: #8c8;
+}
+
+.level-2 {
+    background: #cc5;
+    border-color: #cc5;
+}
+
+.level-3 {
+    background: #c22;
+    border-color: #c22;
+}
+
+.level-4 {
+    background: #000;
+    border-color: #000;
+}
