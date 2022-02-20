@@ -3,7 +3,7 @@ const e = React.createElement;
 
 function cleanHash() {
     if (location.hash.length != 35) {
-        location.hash = '0000000000000000000000000xxxxxxxx0';
+        location.hash = '0000000000000000000000000xxxxxxxx1';
     }
 }
 
@@ -17,10 +17,13 @@ function coordToSpace(coord) {
 
 class Space extends React.Component {
     render() {
-        let className = 'col space ';
+        let className = 'col fs-1 space ';
         className += ' level-' + this.props.level;
 
-        return e('button', {className: className}, this.props.worker);
+        return e('button', {
+            className: className,
+            disabled: !this.props.active,
+        }, ['', 'X', 'O'][this.props.worker]);
     }
 }
 
@@ -28,13 +31,15 @@ class Space extends React.Component {
 class Board extends React.Component {
     render() {
         let p1WorkerCoords = [
-            coordToSpace(this.props.notation.slice(25, 28)),
-            coordToSpace(this.props.notation.slice(27, 30)),
+            coordToSpace(this.props.notation.slice(25, 27)),
+            coordToSpace(this.props.notation.slice(27, 29)),
         ];
         let p2WorkerCoords = [
-            coordToSpace(this.props.notation.slice(29, 32)),
-            coordToSpace(this.props.notation.slice(31, 34)),
+            coordToSpace(this.props.notation.slice(29, 31)),
+            coordToSpace(this.props.notation.slice(31, 33)),
         ];
+
+        let turn = parseInt(this.props.notation.slice(33, 34));
 
         let rows = [];
         for (let i = 0; i < 5; i++) {
@@ -43,7 +48,6 @@ class Board extends React.Component {
                 let space = 5*i + j;
 
                 let worker = null;
-                console.log(space, p1WorkerCoords);
                 if (p1WorkerCoords.includes(space)) {
                     worker = 1;
                 }
@@ -54,6 +58,7 @@ class Board extends React.Component {
                 row.push(e(Space, {key: j,
                     level: parseInt(this.props.notation[space]),
                     worker: worker,
+                    active: turn === worker,
                 }));
             }
 
