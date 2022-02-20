@@ -41,6 +41,8 @@ class Board extends React.Component {
 
         let turn = parseInt(this.props.notation.slice(33, 34));
 
+        let placePhase = this.props.notation.toLowerCase().includes('x');
+
         let rows = [];
         for (let i = 0; i < 5; i++) {
             let row = [];
@@ -55,10 +57,17 @@ class Board extends React.Component {
                     worker = 2;
                 }
 
+                let active;
+                if (placePhase) {
+                    active = worker === null;
+                } else {
+                    active = turn === worker;
+                }
+
                 row.push(e(Space, {key: j,
                     level: parseInt(this.props.notation[space]),
                     worker: worker,
-                    active: turn === worker,
+                    active: active,
                 }));
             }
 
