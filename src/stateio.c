@@ -1,18 +1,36 @@
+#include <ctype.h>
 #include <stdio.h>
 #include "state.h"
 
 
 const char SPACE_STRINGS[25][3] = {
-    "a5", "b5", "c5", "d5", "e5",
-    "a4", "b4", "c4", "d4", "e4",
-    "a3", "b3", "c3", "d3", "e3",
-    "a2", "b2", "c2", "d2", "e2",
     "a1", "b1", "c1", "d1", "e1",
+    "a2", "b2", "c2", "d2", "e2",
+    "a3", "b3", "c3", "d3", "e3",
+    "a4", "b4", "c4", "d4", "e4",
+    "a5", "b5", "c5", "d5", "e5",
 };
+
+
+const char *ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 
 bool State_is_start_phase(const struct State *state);
 int State_height_at(const struct State *state, int pos);
+
+
+int coords_to_spacei(const char* coords)
+{
+    return 5*(tolower(coords[0])-'a') + coords[1] - '1';
+}
+
+
+void spacei_to_coords(int spacei, char *coords)
+{
+    coords[0] = 'a' + (spacei/5);
+    coords[1] = '1' + (spacei % 5);
+    coords[2] = '\0';
+}
 
 
 void State_print(const struct State *state)

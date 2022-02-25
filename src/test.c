@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include "bitops.h"
 #include "layout.h"
 #include "state.h"
@@ -84,12 +85,9 @@ int main()
 
         State_derive(&state);
 
-        State_print(&state);
-
         bool win_found = false;
         for (int i = 0; i < state.action_count; i++) {
             Action_to_string(&state.actions[i], action_string);
-            printf("%s\n", action_string);
 
             if (state.actions[i].build == WIN) {
                 if (state.actions[i].source != 0 || state.actions[i].dest != 5) {
@@ -100,6 +98,45 @@ int main()
         }
         if (!win_found) {
             printf("No win found on basic win test\n");
+        }
+    }
+
+
+    // coords_to_spacei
+    {
+        char coords[] = "a1";
+        if (coords_to_spacei(coords) != 0) {
+            printf("incorrect coords for %s\n", coords);
+        }
+        strcpy(coords, "a2");
+        if (coords_to_spacei(coords) != 1) {
+            printf("incorrect coords for %s\n", coords);
+        }
+        strcpy(coords, "B1");
+        if (coords_to_spacei(coords) != 5) {
+            printf("incorrect coords for %s\n", coords);
+        }
+        strcpy(coords, "e5");
+        if (coords_to_spacei(coords) != 24) {
+            printf("incorrect coords for %s\n", coords);
+        }
+    }
+
+
+    // spacei_to_coords
+    {
+        char coords[] = "a1";
+        spacei_to_coords(0, coords);
+        if (strcmp(coords, "a1") != 0) {
+            printf("incorrect coords for spacei 0: %s\n", coords);
+        }
+        spacei_to_coords(5, coords);
+        if (strcmp(coords, "b1") != 0) {
+            printf("incorrect coords for spacei 5: %s\n", coords);
+        }
+        spacei_to_coords(24, coords);
+        if (strcmp(coords, "e5") != 0) {
+            printf("incorrect coords for spacei 24: %s\n", coords);
         }
     }
 

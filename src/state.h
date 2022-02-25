@@ -45,5 +45,8 @@ void State_print(const struct State *state);
 void State_print_debug(const struct State *state);
 void Action_to_string(const struct Action *action, char *string);
 
+int coords_to_spacei(const char* coords);
+void spacei_to_coords(int spacei, char* coords);
+
 
 #endif
