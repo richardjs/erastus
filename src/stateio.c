@@ -3,30 +3,27 @@
 #include "state.h"
 
 
-const char SPACE_STRINGS[25][3] = {
-    "a1", "b1", "c1", "d1", "e1",
-    "a2", "b2", "c2", "d2", "e2",
-    "a3", "b3", "c3", "d3", "e3",
-    "a4", "b4", "c4", "d4", "e4",
-    "a5", "b5", "c5", "d5", "e5",
-};
-
-
-const char *ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-
 bool State_is_start_phase(const struct State *state);
 int State_height_at(const struct State *state, int pos);
 
 
 int coords_to_spacei(const char* coords)
 {
+    if (tolower(coords[0]) == 'x') {
+        return PLACE;
+    }
     return 5*(tolower(coords[0])-'a') + coords[1] - '1';
 }
 
 
 void spacei_to_coords(int spacei, char *coords)
 {
+    if (spacei == PLACE) {
+        coords[0] = 'x';
+        coords[1] = 'x';
+        coords[2] = '\0';
+        return;
+    }
     coords[0] = 'a' + (spacei/5);
     coords[1] = '1' + (spacei % 5);
     coords[2] = '\0';
@@ -91,14 +88,27 @@ void State_print_debug(const struct State *state)
     State_print(state);
     fprintf(stderr, "Start:\t\t%s\n", State_is_start_phase(state) ? "Y" : "N");
     fprintf(stderr, "Actions:\t%d\n", state->action_count);
+
+    fprintf(stderr, "\nBuilding bitboards:\t%x\t%x\t%x\t%x\n",
+        state->buildings[0], state->buildings[1],
+        state->buildings[2], state->buildings[3]
+    );
+    fprintf(stderr, "Workers:\t\t%d\t%d\t%d\t%d\n",
+        state->workers[0][0], state->workers[0][1],
+        state->workers[1][0], state->workers[1][2]
+    );
 }
 
 
 void Action_to_string(const struct Action *action, char *string)
 {
-    const char *source = SPACE_STRINGS[action->source];
-    const char *dest = SPACE_STRINGS[action->dest];
-    const char *build = SPACE_STRINGS[action->build];
+    char source[COORDS_STRING_SIZE];
+    spacei_to_coords(action->source, source);
+    char dest[COORDS_STRING_SIZE];
+    spacei_to_coords(action->dest, dest);
+    char build[COORDS_STRING_SIZE];
+    spacei_to_coords(action->build, build);
+
     if (action->build == PLACE) {
         sprintf(string, "%s&%s", source, dest, build);
     } else if (action->build == WIN) {
@@ -106,4 +116,48 @@ void Action_to_string(const struct Action *action, char *string)
     } else {
         sprintf(string, "%s-%s+%s", source, dest, build);
     }
+}
+
+
+void State_from_string(struct State *state, const char* string)
+{
+    State_new(state);
+
+    for (int i = 0; i < 25; i++) {
+        switch (string[i]) {
+            case '4':
+                state->buildings[3] |= 1<<i;
+            case '3':
+                state->buildings[2] |= 1<<i;
+            case '2':
+                state->buildings[1] |= 1<<i;
+            case '1':
+                state->buildings[0] |= 1<<i;
+        }
+    }
+
+    state->workers[P1][0] = coords_to_spacei(&string[25]);
+    state->workers[P1][1] = coords_to_spacei(&string[27]);
+    state->workers[P2][0] = coords_to_spacei(&string[29]);
+    state->workers[P2][1] = coords_to_spacei(&string[31]);
+
+    state->turn = string[33] - '1';
+
+    State_derive(state);
+}
+
+
+void State_to_string(const struct State *state, char *string)
+{
+    for (int i = 0; i < 25; i++) {
+        string[i] = State_height_at(state, i) + '0';
+    }
+
+    spacei_to_coords(state->workers[P1][0], &string[25]);
+    spacei_to_coords(state->workers[P1][1], &string[27]);
+    spacei_to_coords(state->workers[P2][0], &string[29]);
+    spacei_to_coords(state->workers[P2][1], &string[31]);
+
+    string[33] = '1' + state->turn;
+    string[34] = '\0';
 }

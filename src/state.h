@@ -8,10 +8,13 @@
 
 // This could be 128 except for start places
 #define MAX_ACTIONS 600
-#define ACTION_STRING_SIZE 9
 
 #define PLACE 26
 #define WIN 27
+
+#define STATE_STRING_SIZE 35
+#define COORDS_STRING_SIZE 3
+#define ACTION_STRING_SIZE 9
 
 
 enum Player {P1=0, P2};
@@ -43,10 +46,11 @@ void State_act(struct State *state, const struct Action *action);
 
 void State_print(const struct State *state);
 void State_print_debug(const struct State *state);
-void Action_to_string(const struct Action *action, char *string);
 
-int coords_to_spacei(const char* coords);
-void spacei_to_coords(int spacei, char* coords);
+void State_from_string(struct State *state, const char* string);
+void State_to_string(const struct State *state, char *string);
+
+void Action_to_string(const struct Action *action, char *string);
 
 
 #endif

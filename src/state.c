@@ -64,6 +64,8 @@ void State_derive_start_actions(struct State *state)
 void State_derive_actions(struct State *state)
 {
     state->action_count = 0;
+    // TODO We only need to do this for memcmp purposes in test.c
+    memset(&state->actions, 0, sizeof(struct Action) * MAX_ACTIONS);
 
     if (State_is_start_phase(state)) {
         State_derive_start_actions(state);
@@ -149,5 +151,6 @@ void State_act(struct State *state, const struct Action *action)
 void State_new(struct State *state)
 {
     memset(state, 0, sizeof(struct State));
+    memset(state->workers, PLACE, 4);
     State_derive(state);
 }

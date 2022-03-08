@@ -1,5 +1,7 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "bitops.h"
 #include "layout.h"
 #include "state.h"
@@ -7,11 +9,17 @@
 
 bool State_is_start_phase(const struct State *state);
 int State_height_at(const struct State *state, int pos);
+int coords_to_spacei(const char* coords);
+void spacei_to_coords(int spacei, char* coords);
 
 
 int main()
 {
     printf("Erastus tests\n");
+
+    time_t seed = time(NULL);
+    printf("Seed:\t%ld\n", seed);
+    srand(seed);
 
     struct State state;
     char action_string[ACTION_STRING_SIZE];
@@ -120,12 +128,16 @@ int main()
         if (coords_to_spacei(coords) != 24) {
             printf("incorrect coords for %s\n", coords);
         }
+        strcpy(coords, "xx");
+        if (coords_to_spacei(coords) != PLACE) {
+            printf("incorrect coords for %s\n", coords);
+        }
     }
 
 
     // spacei_to_coords
     {
-        char coords[] = "a1";
+        char coords[COORDS_STRING_SIZE];
         spacei_to_coords(0, coords);
         if (strcmp(coords, "a1") != 0) {
             printf("incorrect coords for spacei 0: %s\n", coords);
@@ -137,6 +149,60 @@ int main()
         spacei_to_coords(24, coords);
         if (strcmp(coords, "e5") != 0) {
             printf("incorrect coords for spacei 24: %s\n", coords);
+        }
+        spacei_to_coords(PLACE, coords);
+        if (strcmp(coords, "xx") != 0) {
+            printf("incorrect coords for spacei PLACE: %s\n", coords);
+        }
+    }
+
+
+    // Initial state to string
+    {
+        State_new(&state);
+        char string[STATE_STRING_SIZE];
+
+        State_to_string(&state, string);
+        if (strcmp(string, "0000000000000000000000000xxxxxxxx1") != 0) {
+            printf("incorrect state string: %s\n", string);
+        }
+    }
+
+
+    // To string and back for randomly-walked game
+    {
+        State_new(&state);
+        while (state.action_count) {
+            char string[STATE_STRING_SIZE];
+            State_to_string(&state, string);
+
+            struct State state_from_string;
+            State_from_string(&state_from_string, string);
+
+            if (memcmp(&state, &state_from_string, sizeof(struct State))) {
+                printf("deserialized to different state!\n");
+                State_print_debug(&state);
+                printf("\nstring:\t%s\n\n", string);
+                State_print_debug(&state_from_string);
+
+                printf("action differences:\n");
+                for (int i = 0; i < state.action_count; i++) {
+                    if (memcmp(&state.actions[i], &state_from_string.actions[i],
+                            sizeof(struct Action))) {
+                        printf("(%d, %d, %d),\t(%d, %d, %d)\n",
+                            state.actions[i].source,
+                            state.actions[i].dest,
+                            state.actions[i].build,
+                            state_from_string.actions[i].source,
+                            state_from_string.actions[i].dest,
+                            state_from_string.actions[i].build
+                        );
+                    }
+                }
+            }
+
+            struct Action action = state.actions[rand() % state.action_count];
+            State_act(&state, &action);
         }
     }
 
