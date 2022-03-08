@@ -16,3 +16,6 @@ test: $(objects)
 clean:
 	rm -f *.o
 	rm -f test
+
+
+# vim: set noexpandtab:
