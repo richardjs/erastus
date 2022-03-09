@@ -5,7 +5,7 @@
 #include "state.h"
 
 
-enum Command {THINK, LIST_MOVES};
+enum Command {THINK, LIST_ACTIONS};
 
 
 void check_state_string(char *state_string) {
@@ -27,7 +27,8 @@ void check_state_string(char *state_string) {
 }
 
 
-void list_moves(const struct State *state) {
+void list_actions(const struct State *state) {
+    fprintf(stderr, "%d actions\n", state->action_count);
     char action_string[ACTION_STRING_SIZE];
     for (int i = 0; i < state->action_count; i++) {
         Action_to_string(&state->actions[i], action_string);
@@ -37,18 +38,22 @@ void list_moves(const struct State *state) {
 
 
 int main(int argc, char *argv[]) {
+    fprintf(stderr, "Erastus v.1a (built %s %s)\n", __DATE__, __TIME__);
+
     enum Command command = THINK;
 
     int opt;
-    while ((opt = getopt(argc, argv, "m")) != -1) {
+    while ((opt = getopt(argc, argv, "vl")) != -1) {
         switch (opt) {
-        case 'm':
-            command = LIST_MOVES;
+        case 'v':
+            return 0;
+        case 'l':
+            command = LIST_ACTIONS;
             break;
         }
     }
     if (argc == optind) {
-        fprintf(stderr, "Usage: %s [-m] <state>\n", argv[0]);
+        fprintf(stderr, "Usage: %s [-l] <state>\n", argv[0]);
         return 1;
     }
 
@@ -59,8 +64,8 @@ int main(int argc, char *argv[]) {
 
 
     switch (command) {
-    case LIST_MOVES:
-        list_moves(&state);
+    case LIST_ACTIONS:
+        list_actions(&state);
         break;
     case THINK:
         break;
