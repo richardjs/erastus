@@ -5,10 +5,11 @@
 #include "state.h"
 
 
-enum Command {THINK, LIST_ACTIONS};
+enum Command {THINK, LIST_ACTIONS, ACT_AND_PRINT};
 
 
-void check_state_string(char *state_string) {
+void check_state_string(char *state_string)
+{
     bool valid = true;
     for (int i = 0; i < STATE_STRING_SIZE - 2; i++) {
         if (!isalnum(state_string[i])) {
@@ -27,7 +28,8 @@ void check_state_string(char *state_string) {
 }
 
 
-void list_actions(const struct State *state) {
+void list_actions(const struct State *state)
+{
     fprintf(stderr, "%d actions\n", state->action_count);
     char action_string[ACTION_STRING_SIZE];
     for (int i = 0; i < state->action_count; i++) {
@@ -37,23 +39,39 @@ void list_actions(const struct State *state) {
 }
 
 
-int main(int argc, char *argv[]) {
+void act_and_print(const struct State *state, const struct Action *action)
+{
+    struct State after = *state;
+    State_act(&after, action);
+
+    char state_string[STATE_STRING_SIZE];
+    State_to_string(&after, state_string);
+    printf("%s\n", state_string);
+}
+
+
+int main(int argc, char *argv[])
+{
     fprintf(stderr, "Erastus v.1a (built %s %s)\n", __DATE__, __TIME__);
 
     enum Command command = THINK;
-
+    struct Action action;
     int opt;
-    while ((opt = getopt(argc, argv, "vl")) != -1) {
+    while ((opt = getopt(argc, argv, "vlm:")) != -1) {
         switch (opt) {
         case 'v':
             return 0;
         case 'l':
             command = LIST_ACTIONS;
             break;
+        case 'm':
+            command = ACT_AND_PRINT;
+            Action_from_string(&action, optarg);
+            break;
         }
     }
     if (argc == optind) {
-        fprintf(stderr, "Usage: %s [-l] <state>\n", argv[0]);
+        fprintf(stderr, "Usage: %s [-l] [-m move] <state>\n", argv[0]);
         return 1;
     }
 
@@ -64,10 +82,13 @@ int main(int argc, char *argv[]) {
 
 
     switch (command) {
+    case THINK:
+        break;
     case LIST_ACTIONS:
         list_actions(&state);
         break;
-    case THINK:
+    case ACT_AND_PRINT:
+        act_and_print(&state, &action);
         break;
     }
 
