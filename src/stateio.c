@@ -12,7 +12,7 @@ int coords_to_spacei(const char* coords)
     if (tolower(coords[0]) == 'x') {
         return PLACE;
     }
-    return 5*(tolower(coords[0])-'a') + coords[1] - '1';
+    return (tolower(coords[0])-'a') + 5*(coords[1] - '1');
 }
 
 
@@ -24,8 +24,8 @@ void spacei_to_coords(int spacei, char *coords)
         coords[2] = '\0';
         return;
     }
-    coords[0] = 'a' + (spacei/5);
-    coords[1] = '1' + (spacei % 5);
+    coords[0] = 'a' + (spacei % 5);
+    coords[1] = '1' + (spacei / 5);
     coords[2] = '\0';
 }
 

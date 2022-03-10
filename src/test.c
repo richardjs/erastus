@@ -114,19 +114,19 @@ int main()
     {
         char coords[] = "a1";
         if (coords_to_spacei(coords) != 0) {
-            printf("incorrect coords for %s\n", coords);
+            printf("incorrect spacei for %s\n", coords);
         }
         strcpy(coords, "a2");
-        if (coords_to_spacei(coords) != 1) {
-            printf("incorrect coords for %s\n", coords);
+        if (coords_to_spacei(coords) != 5) {
+            printf("incorrect spacei for %s\n", coords);
         }
         strcpy(coords, "B1");
-        if (coords_to_spacei(coords) != 5) {
-            printf("incorrect coords for %s\n", coords);
+        if (coords_to_spacei(coords) != 1) {
+            printf("incorrect spacei for %s\n", coords);
         }
         strcpy(coords, "e5");
         if (coords_to_spacei(coords) != 24) {
-            printf("incorrect coords for %s\n", coords);
+            printf("incorrect spacei for %s\n", coords);
         }
         strcpy(coords, "xx");
         if (coords_to_spacei(coords) != PLACE) {
@@ -142,9 +142,9 @@ int main()
         if (strcmp(coords, "a1") != 0) {
             printf("incorrect coords for spacei 0: %s\n", coords);
         }
-        spacei_to_coords(5, coords);
+        spacei_to_coords(1, coords);
         if (strcmp(coords, "b1") != 0) {
-            printf("incorrect coords for spacei 5: %s\n", coords);
+            printf("incorrect coords for spacei 1: %s\n", coords);
         }
         spacei_to_coords(24, coords);
         if (strcmp(coords, "e5") != 0) {
