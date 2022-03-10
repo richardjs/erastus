@@ -230,6 +230,24 @@ int main()
     }
 
 
+    // Basic State_check_action
+    {
+        State_new(&state);
+        struct Action action;
+        char bad_string[] = "a13b2";
+        Action_from_string(&action, bad_string);
+        if (State_check_action(&state, &action)) {
+            printf("State_check_action passes an invalid action\n");
+        }
+        char good_string[ACTION_STRING_SIZE] = "a1&b2";
+        Action_from_string(&action, good_string);
+        if (!State_check_action(&state, &action)) {
+            printf("State_check_action fails valid action %s\n", good_string);
+            Action_print(&action);
+        }
+    }
+
+
     printf("Done!\n");
     return 0;
 }

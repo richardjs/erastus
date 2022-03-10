@@ -42,6 +42,7 @@ struct State {
 void State_new(struct State *state);
 void State_derive(struct State *state);
 
+bool State_check_action(const struct State *state, const struct Action *action);
 void State_act(struct State *state, const struct Action *action);
 
 void State_print(const struct State *state);

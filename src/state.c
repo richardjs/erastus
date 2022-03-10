@@ -123,6 +123,18 @@ void State_derive(struct State *state)
 }
 
 
+bool State_check_action(const struct State *state, const struct Action *action)
+{
+    for (int i = 0; i < state->action_count; i++) {
+        if (!memcmp(&state->actions[i], action, sizeof(struct Action))) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
 void State_act(struct State *state, const struct Action *action)
 {
     if (action->build == PLACE) {

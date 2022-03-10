@@ -41,6 +41,11 @@ void list_actions(const struct State *state)
 
 void act_and_print(const struct State *state, const struct Action *action)
 {
+    if (!State_check_action(state, action)) {
+        fprintf(stderr, "Invalid action\n");
+        exit(3);
+    }
+
     struct State after = *state;
     State_act(&after, action);
 
