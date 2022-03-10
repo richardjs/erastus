@@ -43,3 +43,8 @@ body {
 .inputBuffer {
     border: 2px dashed;
 }
+
+.ai-options {
+    background: white;
+    margin-top: 30px;
+}

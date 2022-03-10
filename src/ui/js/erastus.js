@@ -124,6 +124,51 @@ class Board extends React.Component {
 }
 
 
+class AIOptions extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.handleInputChange = this.handleInputChange.bind(this)
+    }
+
+    render() {
+        return e('div', {className: 'ai-options'},
+            e('h6', {className: 'lead'}, 'AI Options'),
+            e('div', {className: 'form-check'},
+                e('input', {
+                    className: 'form-check-input',
+                    type: 'checkbox',
+                    id: 'player1_ai',
+                    checked: this.props.player1_ai,
+                    onChange: this.handleInputChange,
+                }),
+                e('label', {
+                    className: 'form-check-label',
+                    htmlFor: 'player1_ai',
+                }, 'Player 1'),
+            ),
+            e('div', {className: 'form-check'},
+                e('input', {
+                    className: 'form-check-input',
+                    type: 'checkbox',
+                    id: 'player2_ai',
+                    checked: this.props.player2_ai,
+                    onChange: this.handleInputChange,
+                }),
+                e('label', {
+                    className: 'form-check-label',
+                    htmlFor: 'player2_ai',
+                }, 'Player 2'),
+            ),
+        );
+    }
+
+    handleInputChange(e) {
+        this.props.onPlayerAIChange(e.target.id, e.target.checked);
+    }
+}
+
+
 class UI extends React.Component {
     constructor(props) {
         super(props);
@@ -131,9 +176,12 @@ class UI extends React.Component {
         this.state = {
             actions: [],
             inputBuffer: [],
+            player1_ai: false,
+            player2_ai: true,
         };
 
-        this.handleAction = this.handleAction.bind(this);
+        this.onAction = this.onAction.bind(this);
+        this.onPlayerAIChange = this.onPlayerAIChange.bind(this);
         this.handleClick = this.handleClick.bind(this);
         this.handleHashChange = this.handleHashChange.bind(this);
         this.handleSpaceClick = this.handleSpaceClick.bind(this);
@@ -147,15 +195,26 @@ class UI extends React.Component {
     }
 
     render() {
-        return e(Board, {
-            notation: location.hash.slice(1),
-            actions: this.state.actions,
-            inputBuffer: this.state.inputBuffer,
-            handleSpaceClick: this.handleSpaceClick,
-        });
+        return e('div', null,
+            e('div', {className: 'row'},
+                e(Board, {
+                    notation: location.hash.slice(1),
+                    actions: this.state.actions,
+                    inputBuffer: this.state.inputBuffer,
+                    handleSpaceClick: this.handleSpaceClick,
+                }),
+            ),
+            e('div', {className: 'row'},
+                e(AIOptions, {
+                    player1_ai: this.state.player1_ai,
+                    player2_ai: this.state.player2_ai,
+                    onPlayerAIChange: this.onPlayerAIChange,
+                }),
+            ),
+        );
     }
 
-    handleAction(action) {
+    onAction(action) {
         this.setState({actions: []});
 
         fetch(API_URL + '/act/' + location.hash.slice(1) + '/' + action)
@@ -165,6 +224,10 @@ class UI extends React.Component {
                 location.hash = json.state;
             })
             .catch(console.error);
+    }
+
+    onPlayerAIChange(player_ai, value) {
+        this.setState({[player_ai]: value});
     }
 
     handleClick() {
@@ -211,7 +274,7 @@ class UI extends React.Component {
 
         if (typeof(activeSpaces) === 'string') {
             this.setState({inputBuffer: []});
-            this.handleAction(activeSpaces);
+            this.onAction(activeSpaces);
             return;
         }
 
