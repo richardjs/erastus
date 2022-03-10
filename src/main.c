@@ -52,6 +52,8 @@ void act_and_print(const struct State *state, const struct Action *action)
     char state_string[STATE_STRING_SIZE];
     State_to_string(&after, state_string);
     printf("%s\n", state_string);
+
+    State_print(&after);
 }
 
 
