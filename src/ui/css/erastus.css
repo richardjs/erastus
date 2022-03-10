@@ -1,3 +1,7 @@
+body {
+    background: #222;
+}
+
 .container {
     max-width: 500px;
 }
@@ -37,5 +41,5 @@
 }
 
 .inputBuffer {
-    background: #eee;
+    border: 3px dashed;
 }
