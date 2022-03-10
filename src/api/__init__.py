@@ -17,8 +17,14 @@ def check_state(state):
         abort(400)
 
 
+def check_action(action):
+    if (len(action) not in [5, 6, 8]
+            or (set(action) - set('abcde12345&-+#'))):
+        abort(400)
+
+
 @app.route('/actions/<state>', methods=['OPTIONS'])
-def options(state):
+def actions_options(state):
     response = Response()
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Access-Control-Allow-Headers'] = 'Iterations, Mode'
@@ -27,7 +33,8 @@ def options(state):
 
 
 @app.route('/actions/<state>')
-def think(state):
+def actions(state):
+    state = state.lower()
     check_state(state)
 
     p = Popen([ERASTUS] + ['-l'] + [state], stdout=PIPE, stderr=PIPE)
@@ -40,6 +47,38 @@ def think(state):
 
     response = jsonify({
         'actions': actions,
+        'log': log,
+    })
+
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Headers'] = 'Iterations, Move'
+
+    return response
+
+
+@app.route('/act/<state>/<action>', methods=['OPTIONS'])
+def act_options(state, action):
+    response = Response()
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Headers'] = 'Iterations, Mode'
+
+    return response
+
+
+@app.route('/act/<state>/<action>')
+def act(state, action):
+    state = state.lower()
+    action = action.lower()
+    check_state(state)
+    check_action(action)
+
+    p = Popen([ERASTUS] + ['-m'] + [action, state], stdout=PIPE, stderr=PIPE)
+
+    state = p.stdout.read().strip().decode('utf-8')
+    log = p.stderr.read().decode('utf-8')
+
+    response = jsonify({
+        'state': state,
         'log': log,
     })
 
