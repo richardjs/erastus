@@ -100,6 +100,27 @@ void State_print_debug(const struct State *state)
 }
 
 
+void Action_print(const struct Action *action)
+{
+    fprintf(stderr, "Action (%d, %d, %d)\n",
+        action->source, action->dest, action->build);
+}
+
+
+void Action_from_string(struct Action *action, const char *string)
+{
+    action->source = coords_to_spacei(&string[0]);
+    action->dest = coords_to_spacei(&string[3]);
+    if (string[2] == '&') {
+        action->build = PLACE;
+    } else if (string[5] == '#' ) {
+        action->build = WIN;
+    } else {
+        action->build = coords_to_spacei(&string[6]);
+    }
+}
+
+
 void Action_to_string(const struct Action *action, char *string)
 {
     char source[COORDS_STRING_SIZE];

@@ -207,6 +207,29 @@ int main()
     }
 
 
+    // Action serialization and back throughout a random walk
+    {
+        State_new(&state);
+        while (state.action_count) {
+            struct Action action = state.actions[rand() % state.action_count];
+
+            char action_string[ACTION_STRING_SIZE];
+            Action_to_string(&action, action_string);
+
+            struct Action action_from_string;
+            Action_from_string(&action_from_string, action_string);
+
+            if (memcmp(&action, &action_from_string, sizeof(struct Action))) {
+                printf("serialization and back changes action %s\n", action_string);
+                Action_print(&action);
+                Action_print(&action_from_string);
+            }
+
+            State_act(&state, &action);
+        }
+    }
+
+
     printf("Done!\n");
     return 0;
 }
