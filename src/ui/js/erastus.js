@@ -111,10 +111,11 @@ class Board extends React.Component {
                 }
 
                 let activeSpaces = actionTree;
-                for (let inputi of this.state.inputBuffer) {
+                let inputi;
+                for (inputi of this.state.inputBuffer) {
                     activeSpaces = activeSpaces[inputi];
                 }
-                let active = activeSpaces[spacei] !== undefined;
+                let active = activeSpaces[spacei] !== undefined || spacei === inputi;
 
                 row.push(e(Space, {key: j,
                     spacei: spacei,
@@ -133,7 +134,17 @@ class Board extends React.Component {
     }
 
     handleClick(spacei, e) {
+        e.stopPropagation();
         let buffer = this.state.inputBuffer.slice();
+
+        // If spacei is the last item of the input buffer, user
+        // is undoing the last input by clikcing
+        if (spacei === buffer[buffer.length - 1]) {
+            buffer = buffer.slice(0, -1);
+            this.setState({inputBuffer: buffer});
+            return;
+        }
+
         buffer.push(spacei);
 
         let activeSpaces = this.buildActionTree();
@@ -164,6 +175,9 @@ class UI extends React.Component {
         window.addEventListener('hashchange', this.handleHashChange);
 
         this.handleAction = this.handleAction.bind(this);
+
+        this.handleClick = this.handleClick.bind(this);
+        window.addEventListener('click', this.handleClick);
     }
 
     componentDidMount() {
@@ -207,6 +221,10 @@ class UI extends React.Component {
                 location.hash = json.state;
             })
             .catch(console.error);
+    }
+
+    handleClick() {
+        // Set inputBuffer to empty
     }
 }
 
