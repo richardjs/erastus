@@ -1,3 +1,7 @@
+body {
+    background: #ddd;
+}
+
 .container {
     max-width: 500px;
 }
@@ -8,7 +12,7 @@
 
 .space {
     border: none;
-    border: 1px solid;
+    border: 2px solid;
 }
 
 .level-0 {
@@ -37,5 +41,5 @@
 }
 
 .inputBuffer {
-    background: #eee;
+    border: 2px dashed;
 }
