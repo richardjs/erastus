@@ -4,17 +4,49 @@ API_URL = 'http://127.0.0.1:5000'
 const e = React.createElement;
 
 
-function coordToSpace(coord) {
+function coordsToSpace(coord) {
     col = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4}[coord[0].toLowerCase()];
     row = parseInt(coord[1]) - 1;
     return 5*row + col;
 }
 
 
-function spaceToCoord(spacei) {
+function spaceToCoords(spacei) {
     col = 'abcde'[spacei % 5];
     row = Math.floor(spacei / 5) + 1;
     return col + row;
+}
+
+
+// Create a tree structure from a list of actions. The nodes are the
+// spaceis of the components of the action. Each leaf is the string
+// representation of the action consisting of the spaceis (stored here
+// for easy sending back to the API).
+function buildActionTree(actions) {
+    let actionTree = {};
+
+    for (let action_string of actions) {
+        // Split action string into component spaces and convert to spaceis
+        let actionSpaces = action_string.split(/\&|-|\+/).map(coordsToSpace);
+
+        if (actionTree[actionSpaces[0]] === undefined) {
+            actionTree[actionSpaces[0]] = {};
+        }
+
+        if (actionTree[actionSpaces[0]][actionSpaces[1]] === undefined) {
+            if (actionSpaces.length === 2) {
+                actionTree[actionSpaces[0]][actionSpaces[1]] = action_string;
+            } else {
+                actionTree[actionSpaces[0]][actionSpaces[1]] = {};
+            }
+        }
+
+        if (actionSpaces.length === 3) {
+            actionTree[actionSpaces[0]][actionSpaces[1]][actionSpaces[2]] = action_string;
+        }
+    }
+
+    return actionTree;
 }
 
 
@@ -37,65 +69,18 @@ class Space extends React.Component {
 
 
 class Board extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            inputBuffer: [],
-        };
-
-        this.handleClick = this.handleClick.bind(this);
-    }
-
-
-    isPlacePhase() {
-        return this.props.notation.toLowerCase().includes('x');
-    }
-
-
-    turn() {
-        return parseInt(this.props.notation.slice(33, 34));
-    }
-
-
-    buildActionTree() {
-        let actionTree = {};
-
-        for (let action of this.props.actions) {
-            let actionSpaces = action.split(/\&|-|\+/).map(coordToSpace);
-
-            if (actionTree[actionSpaces[0]] === undefined) {
-                actionTree[actionSpaces[0]] = {};
-            }
-
-            if (actionTree[actionSpaces[0]][actionSpaces[1]] === undefined) {
-                if (actionSpaces.length === 2) {
-                    actionTree[actionSpaces[0]][actionSpaces[1]] = action;
-                } else {
-                    actionTree[actionSpaces[0]][actionSpaces[1]] = {};
-                }
-            }
-
-            if (actionSpaces.length === 3) {
-                actionTree[actionSpaces[0]][actionSpaces[1]][actionSpaces[2]] = action;
-            }
-        }
-
-        return actionTree;
-    }
-
-
     render() {
+        // Pull spaceis of workers from the state notation
         let p1WorkerSpaces = [
-            coordToSpace(this.props.notation.slice(25, 27)),
-            coordToSpace(this.props.notation.slice(27, 29)),
+            coordsToSpace(this.props.notation.slice(25, 27)),
+            coordsToSpace(this.props.notation.slice(27, 29)),
         ];
         let p2WorkerSpaces = [
-            coordToSpace(this.props.notation.slice(29, 31)),
-            coordToSpace(this.props.notation.slice(31, 33)),
+            coordsToSpace(this.props.notation.slice(29, 31)),
+            coordsToSpace(this.props.notation.slice(31, 33)),
         ];
 
-        let actionTree = this.buildActionTree();
+        let actionTree = buildActionTree(this.props.actions);
 
         let rows = [];
         for (let i = 0; i < 5; i++) {
@@ -110,20 +95,24 @@ class Board extends React.Component {
                     worker = 2;
                 }
 
+                // Walk down the actionTree with the spaces already in inputBuffer
                 let activeSpaces = actionTree;
                 let inputi;
-                for (inputi of this.state.inputBuffer) {
+                for (inputi of this.props.inputBuffer) {
                     activeSpaces = activeSpaces[inputi];
                 }
+                // A space is active if there is an action from our
+                // current inputBuffer, or if it is the last space in
+                // the inputBuffer (in which case a click is an undo)
                 let active = activeSpaces[spacei] !== undefined || spacei === inputi;
 
                 row.push(e(Space, {key: j,
                     spacei: spacei,
-                    handleClick: this.handleClick,
+                    handleClick: this.props.handleSpaceClick,
                     level: parseInt(this.props.notation[spacei]),
                     worker: worker,
                     active: active,
-                    inInputBuffer: this.state.inputBuffer.includes(spacei),
+                    inInputBuffer: this.props.inputBuffer.includes(spacei),
                 }));
             }
 
@@ -131,34 +120,6 @@ class Board extends React.Component {
         }
 
         return e('div', {className: 'board'}, rows);
-    }
-
-    handleClick(spacei, e) {
-        e.stopPropagation();
-        let buffer = this.state.inputBuffer.slice();
-
-        // If spacei is the last item of the input buffer, user
-        // is undoing the last input by clikcing
-        if (spacei === buffer[buffer.length - 1]) {
-            buffer = buffer.slice(0, -1);
-            this.setState({inputBuffer: buffer});
-            return;
-        }
-
-        buffer.push(spacei);
-
-        let activeSpaces = this.buildActionTree();
-        for (let inputi of buffer) {
-            activeSpaces = activeSpaces[inputi];
-        }
-
-        if (typeof(activeSpaces) === 'string') {
-            this.setState({inputBuffer: []});
-            this.props.handleAction(activeSpaces);
-            return;
-        }
-
-        this.setState({inputBuffer: buffer});
     }
 }
 
@@ -169,15 +130,16 @@ class UI extends React.Component {
 
         this.state = {
             actions: [],
+            inputBuffer: [],
         };
 
-        this.handleHashChange = this.handleHashChange.bind(this);
-        window.addEventListener('hashchange', this.handleHashChange);
-
         this.handleAction = this.handleAction.bind(this);
-
         this.handleClick = this.handleClick.bind(this);
+        this.handleHashChange = this.handleHashChange.bind(this);
+        this.handleSpaceClick = this.handleSpaceClick.bind(this);
+
         window.addEventListener('click', this.handleClick);
+        window.addEventListener('hashchange', this.handleHashChange);
     }
 
     componentDidMount() {
@@ -188,8 +150,25 @@ class UI extends React.Component {
         return e(Board, {
             notation: location.hash.slice(1),
             actions: this.state.actions,
-            handleAction: this.handleAction,
+            inputBuffer: this.state.inputBuffer,
+            handleSpaceClick: this.handleSpaceClick,
         });
+    }
+
+    handleAction(action) {
+        this.setState({actions: []});
+
+        fetch(API_URL + '/act/' + location.hash.slice(1) + '/' + action)
+            .then(response => response.json())
+            .then(json => {
+                console.log(json.log);
+                location.hash = json.state;
+            })
+            .catch(console.error);
+    }
+
+    handleClick() {
+        // Set inputBuffer to empty
     }
 
     handleHashChange() {
@@ -211,20 +190,32 @@ class UI extends React.Component {
             .catch(console.error);
     }
 
-    handleAction(action) {
-        this.setState({actions: []});
+    handleSpaceClick(spacei, e) {
+        e.stopPropagation();
+        let buffer = this.state.inputBuffer.slice();
 
-        fetch(API_URL + '/act/' + location.hash.slice(1) + '/' + action)
-            .then(response => response.json())
-            .then(json => {
-                console.log(json.log);
-                location.hash = json.state;
-            })
-            .catch(console.error);
-    }
+        // If spacei is the last item of the input buffer, user
+        // is undoing the last input by clikcing
+        if (spacei === buffer[buffer.length - 1]) {
+            buffer = buffer.slice(0, -1);
+            this.setState({inputBuffer: buffer});
+            return;
+        }
 
-    handleClick() {
-        // Set inputBuffer to empty
+        buffer.push(spacei);
+
+        let activeSpaces = buildActionTree(this.state.actions);
+        for (let inputi of buffer) {
+            activeSpaces = activeSpaces[inputi];
+        }
+
+        if (typeof(activeSpaces) === 'string') {
+            this.setState({inputBuffer: []});
+            this.handleAction(activeSpaces);
+            return;
+        }
+
+        this.setState({inputBuffer: buffer});
     }
 }
 
