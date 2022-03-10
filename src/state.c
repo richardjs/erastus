@@ -83,7 +83,7 @@ void State_derive_actions(struct State *state)
 
         // Can move to adjacent spaces with height_at <= height+1
         uint_fast32_t blocked_for_move = blocked_for_all;
-        for (int h = height+2; h < 3; h++) {
+        for (int h = height+1; h < 3; h++) {
             blocked_for_move |= state->buildings[h];
         }
 
