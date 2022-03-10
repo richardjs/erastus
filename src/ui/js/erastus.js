@@ -70,14 +70,14 @@ class Board extends React.Component {
 
             if (actionTree[actionSpaces[0]][actionSpaces[1]] === undefined) {
                 if (actionSpaces.length === 2) {
-                    actionTree[actionSpaces[0]][actionSpaces[1]] = null;
+                    actionTree[actionSpaces[0]][actionSpaces[1]] = action;
                 } else {
                     actionTree[actionSpaces[0]][actionSpaces[1]] = {};
                 }
             }
 
             if (actionSpaces.length === 3) {
-                actionTree[actionSpaces[0]][actionSpaces[1]][actionSpaces[2]] = null;
+                actionTree[actionSpaces[0]][actionSpaces[1]][actionSpaces[2]] = action;
             }
         }
 
@@ -141,9 +141,9 @@ class Board extends React.Component {
             activeSpaces = activeSpaces[inputi];
         }
 
-        if (activeSpaces === null) {
-            // TODO submit move to server
-            console.log('move complete');
+        if (typeof(activeSpaces) === 'string') {
+            this.setState({inputBuffer: []});
+            this.props.handleAction(activeSpaces);
             return;
         }
 
@@ -160,22 +160,25 @@ class UI extends React.Component {
             actions: [],
         };
 
-        this.hashChange = this.hashChange.bind(this);
-        window.addEventListener('hashchange', this.hashChange);
+        this.handleHashChange = this.handleHashChange.bind(this);
+        window.addEventListener('hashchange', this.handleHashChange);
+
+        this.handleAction = this.handleAction.bind(this);
     }
 
     componentDidMount() {
-        this.hashChange();
+        this.handleHashChange();
     }
 
     render() {
         return e(Board, {
             notation: location.hash.slice(1),
             actions: this.state.actions,
+            handleAction: this.handleAction,
         });
     }
 
-    hashChange() {
+    handleHashChange() {
         // TODO better checks here
         if (location.hash.length != 35) {
             location.hash = '0000000000000000000000000xxxxxxxx1';
@@ -190,6 +193,18 @@ class UI extends React.Component {
             .then(json => {
                 console.log(json.log);
                 this.setState({actions: json.actions});
+            })
+            .catch(console.error);
+    }
+
+    handleAction(action) {
+        this.setState({actions: []});
+
+        fetch(API_URL + '/act/' + location.hash.slice(1) + '/' + action)
+            .then(response => response.json())
+            .then(json => {
+                console.log(json.log);
+                location.hash = json.state;
             })
             .catch(console.error);
     }
