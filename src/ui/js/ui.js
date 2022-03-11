@@ -34,6 +34,8 @@ class UI extends React.Component {
                     notation: location.hash.slice(1),
                     actions: this.state.actions,
                     inputBuffer: this.state.inputBuffer,
+                    player1_ai: this.state.player1_ai,
+                    player2_ai: this.state.player2_ai,
                     handleSpaceClick: this.handleSpaceClick,
                 }),
             ),
@@ -47,6 +49,7 @@ class UI extends React.Component {
         );
     }
 
+    // User has entered an action using the Board component
     onAction(action) {
         this.setState({actions: []});
 
@@ -55,10 +58,15 @@ class UI extends React.Component {
             .then(json => {
                 console.log(json.log);
                 location.hash = json.state;
+
+                if (this.state['player'+turn()+'_ai']) {
+                    this.aiMove();
+                }
             })
             .catch(console.error);
     }
 
+    // User has adjusted the AI configuration
     onPlayerAIChange(player_ai, value) {
         this.setState({[player_ai]: value});
     }
@@ -67,6 +75,7 @@ class UI extends React.Component {
         // Set inputBuffer to empty
     }
 
+    // URL hash has changed (either manually or after an action)
     handleHashChange() {
         // TODO better checks here
         if (location.hash.length != 35) {
@@ -86,6 +95,7 @@ class UI extends React.Component {
             .catch(console.error);
     }
 
+    // User has clicked a Space component
     handleSpaceClick(spacei, e) {
         e.stopPropagation();
         let buffer = this.state.inputBuffer.slice();
@@ -112,6 +122,18 @@ class UI extends React.Component {
         }
 
         this.setState({inputBuffer: buffer});
+    }
+
+    aiMove() {
+        this.setState({actions: []});
+
+        fetch(API_URL + '/think/' + location.hash.slice(1))
+            .then(response => response.json())
+            .then(json => {
+                console.log(json.log);
+                location.hash = json.state;
+            })
+            .catch(console.error)
     }
 }
 

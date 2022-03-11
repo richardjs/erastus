@@ -5,7 +5,7 @@
 #include "state.h"
 
 
-enum Command {THINK, LIST_ACTIONS, ACT_AND_PRINT};
+enum Command {THINK, RANDOM, LIST_ACTIONS, ACT_AND_PRINT};
 
 
 void check_state_string(char *state_string)
@@ -57,14 +57,29 @@ void act_and_print(const struct State *state, const struct Action *action)
 }
 
 
+void random_action(const struct State *state)
+{
+    struct State after = *state;
+    State_act(&after, &state->actions[rand() % state->action_count]);
+
+    char state_string[STATE_STRING_SIZE];
+    State_to_string(&after, state_string);
+    printf("%s\n", state_string);
+}
+
+
 int main(int argc, char *argv[])
 {
     fprintf(stderr, "Erastus v.1a (built %s %s)\n", __DATE__, __TIME__);
 
+    time_t seed = time(NULL);
+    fprintf(stderr, "Seed:\t%ld\n", seed);
+    srand(seed);
+
     enum Command command = THINK;
     struct Action action;
     int opt;
-    while ((opt = getopt(argc, argv, "vlm:")) != -1) {
+    while ((opt = getopt(argc, argv, "vlm:r")) != -1) {
         switch (opt) {
         case 'v':
             return 0;
@@ -75,6 +90,8 @@ int main(int argc, char *argv[])
             command = ACT_AND_PRINT;
             Action_from_string(&action, optarg);
             break;
+        case 'r':
+            command = RANDOM;
         }
     }
     if (argc == optind) {
@@ -96,6 +113,9 @@ int main(int argc, char *argv[])
         break;
     case ACT_AND_PRINT:
         act_and_print(&state, &action);
+        break;
+    case RANDOM:
+        random_action(&state);
         break;
     }
 

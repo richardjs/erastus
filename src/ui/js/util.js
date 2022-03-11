@@ -36,6 +36,11 @@ function spaceToCoords(spacei) {
 }
 
 
+function turn() {
+    return location.hash[34];
+}
+
+
 // Create a tree structure from a list of actions. The nodes are the
 // spaceis of the components of the action. Each leaf is the string
 // representation of the action consisting of the spaceis (stored here

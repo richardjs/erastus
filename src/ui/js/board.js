@@ -43,16 +43,22 @@ class Board extends React.Component {
                     worker = 2;
                 }
 
-                // Walk down the actionTree with the spaces already in inputBuffer
-                let activeSpaces = actionTree;
-                let inputi;
-                for (inputi of this.props.inputBuffer) {
-                    activeSpaces = activeSpaces[inputi];
+                let active;
+                if (!this.props['player'+turn()+'_ai']) {
+                    // Walk down the actionTree with the spaces already in inputBuffer
+                    let activeSpaces = actionTree;
+                    let inputi;
+                    for (inputi of this.props.inputBuffer) {
+                        activeSpaces = activeSpaces[inputi];
+                    }
+                    // A space is active if there is an action from our
+                    // current inputBuffer, or if it is the last space in
+                    // the inputBuffer (in which case a click is an undo)
+                    active = (activeSpaces[spacei] !== undefined
+                        || spacei === inputi);
+                } else {
+                    active = false;
                 }
-                // A space is active if there is an action from our
-                // current inputBuffer, or if it is the last space in
-                // the inputBuffer (in which case a click is an undo)
-                let active = activeSpaces[spacei] !== undefined || spacei === inputi;
 
                 row.push(e(Space, {key: j,
                     spacei: spacei,

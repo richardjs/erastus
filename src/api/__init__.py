@@ -86,3 +86,32 @@ def act(state, action):
     response.headers['Access-Control-Allow-Headers'] = 'Iterations, Move'
 
     return response
+
+
+@app.route('/think/<state>', methods=['OPTIONS'])
+def think_options(state):
+    response = Response()
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Headers'] = 'Iterations, Mode'
+
+    return response
+
+
+@app.route('/think/<state>')
+def think(state):
+    state = state.lower()
+    check_state(state)
+
+    p = Popen([ERASTUS] + ['-r'] + [state], stdout=PIPE, stderr=PIPE)
+    state = p.stdout.read().strip().decode('utf-8')
+    log = p.stderr.read().decode('utf-8')
+
+    response = jsonify({
+        'state': state,
+        'log': log,
+    })
+
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Headers'] = 'Iterations, Move'
+
+    return response
