@@ -22,9 +22,9 @@ function resizeBoard() {
 window.addEventListener('resize', resizeBoard);
 
 
-function coordsToSpace(coord) {
-    col = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4}[coord[0].toLowerCase()];
-    row = parseInt(coord[1]) - 1;
+function coordsToSpace(coords) {
+    col = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4}[coords[0].toLowerCase()];
+    row = parseInt(coords[1]) - 1;
     return 5*row + col;
 }
 
