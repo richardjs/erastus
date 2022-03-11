@@ -24,10 +24,13 @@ class UI extends React.Component {
 
     componentDidMount() {
         resizeBoard();
-        this.handleHashChange();
     }
 
     render() {
+        if (location.hash.length == 0) {
+            this.handleHashChange();
+        }
+
         return e('div', null,
             e('div', {className: 'row'},
                 e(Board, {
