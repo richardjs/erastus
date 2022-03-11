@@ -81,6 +81,11 @@ void State_derive_actions(struct State *state)
         int pos = state->workers[state->turn][w];
         int height = State_height_at(state, pos);
 
+        if (height == 3) {
+            state->action_count = 0;
+            return;
+        }
+
         // Can move to adjacent spaces with height_at <= height+1
         uint_fast32_t blocked_for_move = blocked_for_all;
         for (int h = height+1; h < 3; h++) {

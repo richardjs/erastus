@@ -247,6 +247,14 @@ int main()
         }
     }
 
+    {
+        char state_string[STATE_STRING_SIZE] = "3000000000000000000000000a1d4c5b31";
+        State_from_string(&state, state_string);
+        if (state.action_count != 0) {
+            printf("actions despite win");
+        }
+    }
+
 
     printf("Done!\n");
     return 0;
