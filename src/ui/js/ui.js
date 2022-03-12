@@ -32,7 +32,7 @@ class UI extends React.Component {
         }
 
         return e('div', null,
-            e('div', {className: 'row'},
+            e('div', {className: 'row pt-4'},
                 e(Board, {
                     notation: location.hash.slice(1),
                     actions: this.state.actions,
@@ -42,12 +42,18 @@ class UI extends React.Component {
                     handleSpaceClick: this.handleSpaceClick,
                 }),
             ),
-            e('div', {className: 'row'},
+            e('div', {className: 'row mt-4'},
                 e(AIOptions, {
                     player1_ai: this.state.player1_ai,
                     player2_ai: this.state.player2_ai,
                     onPlayerAIChange: this.onPlayerAIChange,
                 }),
+            ),
+            e('div', {className: 'row mt-4'},
+                e('button', {
+                    className: 'btn btn-danger',
+                    onClick: () => {if (confirm('New game?')) window.location = ''},
+                }, "New game"),
             ),
         );
     }

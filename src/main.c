@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
     fprintf(stderr, "Erastus v.1a (built %s %s)\n", __DATE__, __TIME__);
 
     time_t seed = time(NULL);
-    fprintf(stderr, "Seed:\t%ld\n", seed);
+    fprintf(stderr, "seed:\t\t%ld\n", seed);
     srand(seed);
 
     enum Command command = THINK;

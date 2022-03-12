@@ -6,10 +6,6 @@ body {
     max-width: 500px;
 }
 
-.board {
-    margin-top: 20px;
-}
-
 .space {
     border: none;
     border: 2px solid #ddd;
@@ -41,5 +37,4 @@ body {
 
 .ai-options {
     background: white;
-    margin-top: 30px;
 }
