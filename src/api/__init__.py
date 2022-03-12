@@ -68,8 +68,15 @@ def act_options(state, action):
 @app.route('/act/<state>/<action>')
 def act(state, action):
     state = state.lower()
-    action = action.lower()
     check_state(state)
+    action = action.lower()
+
+    # A win has a #, which gets confused for a URL hash
+    # Wins are disambigous in other ways, so we'll take care of it here
+    # so the API user doesn't have to worry about it
+    if '-' in action and len(action) == 5:
+        action += '#'
+
     check_action(action)
 
     p = Popen([ERASTUS] + ['-m'] + [action, state], stdout=PIPE, stderr=PIPE)
