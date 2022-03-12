@@ -99,9 +99,18 @@ void State_derive_actions(struct State *state)
             moves ^= 1 << dest;
 
             if (State_height_at(state, dest) == 3) {
-                state->actions[state->action_count].source = pos;
-                state->actions[state->action_count].dest = dest;
-                state->actions[state->action_count++].build = WIN;
+                // If we find a win, store it as the first action for
+                // quick checking later
+                if (state->actions[0].build != WIN) {
+                    state->actions[state->action_count++] = state->actions[0];
+                    state->actions[0].source = pos;
+                    state->actions[0].dest = dest;
+                    state->actions[0].build = WIN;
+                } else {
+                    state->actions[state->action_count].source = pos;
+                    state->actions[state->action_count].dest = dest;
+                    state->actions[state->action_count++].build = WIN;
+                }
                 continue;
             }
 

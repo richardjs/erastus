@@ -256,6 +256,22 @@ int main()
     }
 
 
+    // If there's a win, the first action slot should be a win
+    {
+        State_new(&state);
+        for (int i = 0; i < 4; i++) {
+            state.workers[0][i] = i;
+        }
+        state.buildings[1] = 1;
+        state.buildings[2] = 1 << 5;
+
+        State_derive(&state);
+
+        if (state.actions[0].build != WIN) {
+            printf("No win found at actions[0] when win exists\n");
+        }
+    }
+
     printf("Done!\n");
     return 0;
 }

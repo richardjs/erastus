@@ -104,8 +104,13 @@ float simulate(struct State *state)
             return 0.0;
         }
 
-        struct Action action = state->actions[rand() % state->action_count];
-        State_act(state, &action);
+        // If there's a win, it will be placed in actions[0] during action derivation
+        if (state->actions[0].build == WIN) {
+            return turn == state->turn ? 1.0 : -1.0;
+        } else {
+            struct Action action = state->actions[rand() % state->action_count];
+            State_act(state, &action);
+        }
     }
 
     // It doesn't matter if action_count==0 due to winning or no legal
@@ -127,6 +132,11 @@ float iterate(struct Node *root, struct State *state)
         root->visits++;
         root->value += -1.0;
         return -1.0;
+    }
+    if (state->actions[0].build == WIN) {
+        root->visits++;
+        root->value += 1.0;
+        return 1.0;
     }
 
     if (!root->expanded) {
