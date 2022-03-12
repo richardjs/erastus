@@ -10,37 +10,6 @@
 enum Command {THINK, RANDOM, LIST_ACTIONS, ACT_AND_PRINT};
 
 
-void think(const struct State *state)
-{
-    struct MCTSResults results;
-    mcts(state, &results, NULL);
-
-    char action_string[ACTION_STRING_SIZE];
-    Action_to_string(&state->actions[results.actioni], action_string);
-    printf("%s\n", action_string);
-
-    fprintf(stderr, "score\t\t%f\n", results.score);
-
-    fprintf(stderr, "time:\t\t%ld ms\n", results.stats.duration);
-    fprintf(stderr, "iterations:\t%ld\n", results.stats.iterations);
-    fprintf(stderr, "iters/s:\t%ld\n",
-        results.stats.duration ?
-            1000 * results.stats.iterations / results.stats.duration : 0);
-    fprintf(stderr, "sim depth out:\t%.4g%%\n",
-        results.stats.simulations ?
-            100 * (float)results.stats.depth_outs / results.stats.simulations : 0);
-    fprintf(stderr, "tree depth:\t%d\n", results.stats.tree_depth);
-    fprintf(stderr, "tree size:\t%ld MiB\n",
-        results.stats.tree_bytes / 1024 / 1024);
-
-    struct State after = *state;
-    State_act(&after, &state->actions[results.actioni]);
-    if (after.action_count == 0) {
-        fprintf(stderr, "no more actions");
-    }
-}
-
-
 void check_state_string(char *state_string)
 {
     bool valid = true;
@@ -115,9 +84,14 @@ int main(int argc, char *argv[])
     srand(seed);
 
     enum Command command = THINK;
+
+    struct MCTSOptions options;
+    MCTSOptions_default(&options);
+
     struct Action action;
+
     int opt;
-    while ((opt = getopt(argc, argv, "vlm:r")) != -1) {
+    while ((opt = getopt(argc, argv, "vlm:ri:")) != -1) {
         switch (opt) {
         case 'v':
             return 0;
@@ -130,6 +104,10 @@ int main(int argc, char *argv[])
             break;
         case 'r':
             command = RANDOM;
+            break;
+        case 'i':
+            options.iterations = atoi(optarg);
+            break;
         }
     }
     if (argc == optind) {
@@ -142,25 +120,49 @@ int main(int argc, char *argv[])
     struct State state;
     State_from_string(&state, argv[optind]);
 
-
     switch (command) {
-    case THINK:
-        think(&state);
-        break;
-
     case LIST_ACTIONS:
         list_actions(&state);
+        return 0;
         break;
 
     case ACT_AND_PRINT:
         act_and_print(&state, &action);
+        return 0;
         break;
 
     case RANDOM:
         random_action(&state);
+        return 0;
         break;
     }
 
+    struct MCTSResults results;
+    mcts(&state, &results, &options);
+
+    char action_string[ACTION_STRING_SIZE];
+    Action_to_string(&state.actions[results.actioni], action_string);
+    printf("%s\n", action_string);
+
+    fprintf(stderr, "score\t\t%f\n", results.score);
+
+    fprintf(stderr, "time:\t\t%ld ms\n", results.stats.duration);
+    fprintf(stderr, "iterations:\t%ld\n", results.stats.iterations);
+    fprintf(stderr, "iters/s:\t%ld\n",
+        results.stats.duration ?
+            1000 * results.stats.iterations / results.stats.duration : 0);
+    fprintf(stderr, "sim depth out:\t%.4g%%\n",
+        results.stats.simulations ?
+            100 * (float)results.stats.depth_outs / results.stats.simulations : 0);
+    fprintf(stderr, "tree depth:\t%d\n", results.stats.tree_depth);
+    fprintf(stderr, "tree size:\t%ld MiB\n",
+        results.stats.tree_bytes / 1024 / 1024);
+
+    struct State after = state;
+    State_act(&after, &state.actions[results.actioni]);
+    if (after.action_count == 0) {
+        fprintf(stderr, "no more actions");
+    }
 
     return 0;
 }
