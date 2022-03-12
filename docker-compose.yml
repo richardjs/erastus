@@ -1,0 +1,12 @@
+services:
+  api:
+    build:
+      context: src/
+      dockerfile: Dockerfile-api
+
+  ui:
+    build:
+      context: src
+      dockerfile: Dockerfile-ui
+    ports:
+      - "9000:80"
