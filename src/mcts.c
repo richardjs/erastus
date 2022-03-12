@@ -203,12 +203,12 @@ void mcts(const struct State *state, struct MCTSResults *r, const struct MCTSOpt
     gettimeofday(&end, NULL);
     results->stats.duration = (end.tv_sec - start.tv_sec)*1000 + (end.tv_usec - start.tv_usec)/1000;
 
-    float best_score = -INFINITY;
+    results->score = -INFINITY;
     for (int i = 0; i < state->action_count; i++) {
         float score = -1 * root->children[i]->value / root->children[i]->visits;
 
-        if (score >= best_score) {
-            best_score = score;
+        if (score >= results->score) {
+            results->score = score;
             results->actioni = i;
         }
     }

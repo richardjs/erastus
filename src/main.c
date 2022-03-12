@@ -18,6 +18,21 @@ void think(const struct State *state)
     char action_string[ACTION_STRING_SIZE];
     Action_to_string(&state->actions[results.actioni], action_string);
     printf("%s\n", action_string);
+
+    fprintf(stderr, "score\t\t%f\n", results.score);
+
+    fprintf(stderr, "time:\t\t%ld ms\n", results.stats.duration);
+    fprintf(stderr, "iterations:\t%ld\n", results.stats.iterations);
+    fprintf(stderr, "iters/s:\t%ld\n",
+        results.stats.duration ?
+            1000 * results.stats.iterations / results.stats.duration : 0);
+    fprintf(stderr, "sim depth out:\t%.4g%%\n",
+        results.stats.simulations ?
+            100 * (float)results.stats.depth_outs / results.stats.simulations : 0);
+    fprintf(stderr, "tree depth:\t%d\n", results.stats.tree_depth);
+    fprintf(stderr, "tree size:\t%ld MiB\n",
+        results.stats.tree_bytes / 1024 / 1024);
+
 }
 
 

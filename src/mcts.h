@@ -43,6 +43,7 @@ struct MCTSStats {
 
 struct MCTSResults {
     uint16_t actioni;
+    float score;
     struct MCTSStats stats;
     struct Node *tree;
 };
