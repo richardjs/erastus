@@ -33,6 +33,11 @@ void think(const struct State *state)
     fprintf(stderr, "tree size:\t%ld MiB\n",
         results.stats.tree_bytes / 1024 / 1024);
 
+    struct State after = *state;
+    State_act(&after, &state->actions[results.actioni]);
+    if (after.action_count == 0) {
+        fprintf(stderr, "no more actions");
+    }
 }
 
 
@@ -87,12 +92,17 @@ void act_and_print(const struct State *state, const struct Action *action)
 
 void random_action(const struct State *state)
 {
-    struct State after = *state;
-    State_act(&after, &state->actions[rand() % state->action_count]);
+    struct Action action = state->actions[rand() % state->action_count];
 
-    char state_string[STATE_STRING_SIZE];
-    State_to_string(&after, state_string);
-    printf("%s\n", state_string);
+    char action_string[ACTION_STRING_SIZE];
+    Action_to_string(&action, action_string);
+    printf("%s\n", action_string);
+
+    struct State after = *state;
+    State_act(&after, &action);
+    if (after.action_count == 0) {
+        fprintf(stderr, "no more actions");
+    }
 }
 
 
