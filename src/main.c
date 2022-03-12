@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
     struct Action action;
 
     int opt;
-    while ((opt = getopt(argc, argv, "vlm:ri:")) != -1) {
+    while ((opt = getopt(argc, argv, "vlm:ri:c:")) != -1) {
         switch (opt) {
         case 'v':
             return 0;
@@ -111,6 +111,9 @@ int main(int argc, char *argv[])
             break;
         case 'i':
             options.iterations = atoi(optarg);
+            break;
+        case 'c':
+            options.uctc = atof(optarg);
             break;
         }
     }
@@ -148,6 +151,7 @@ int main(int argc, char *argv[])
     Action_to_string(&state.actions[results.actioni], action_string);
     printf("%s\n", action_string);
 
+    fprintf(stderr, "action:\t\t%s\n", action_string);
     fprintf(stderr, "score\t\t%f\n", results.score);
 
     fprintf(stderr, "time:\t\t%ld ms\n", results.stats.duration);
@@ -161,6 +165,7 @@ int main(int argc, char *argv[])
     fprintf(stderr, "tree depth:\t%d\n", results.stats.tree_depth);
     fprintf(stderr, "tree size:\t%ld MiB\n",
         results.stats.tree_bytes / 1024 / 1024);
+    fprintf(stderr, "UCTC:\t\t%g\n", options.uctc);
 
     struct State after = state;
     State_act(&after, &state.actions[results.actioni]);
