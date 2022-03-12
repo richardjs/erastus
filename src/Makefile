@@ -1,7 +1,8 @@
 CLAGS=-std=c99 -Wall -O3
+LDFLAGS=-lm
 
 
-objects=state.o stateio.o layout.o
+objects=state.o stateio.o layout.o mcts.o
 
 
 all: erastus

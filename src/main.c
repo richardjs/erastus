@@ -1,11 +1,24 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <unistd.h>
+#include "mcts.h"
 #include "state.h"
 
 
 enum Command {THINK, RANDOM, LIST_ACTIONS, ACT_AND_PRINT};
+
+
+void think(const struct State *state)
+{
+    struct MCTSResults results;
+    mcts(state, &results, NULL);
+
+    char action_string[ACTION_STRING_SIZE];
+    Action_to_string(&state->actions[results.actioni], action_string);
+    printf("%s\n", action_string);
+}
 
 
 void check_state_string(char *state_string)
@@ -107,13 +120,17 @@ int main(int argc, char *argv[])
 
     switch (command) {
     case THINK:
+        think(&state);
         break;
+
     case LIST_ACTIONS:
         list_actions(&state);
         break;
+
     case ACT_AND_PRINT:
         act_and_print(&state, &action);
         break;
+
     case RANDOM:
         random_action(&state);
         break;
