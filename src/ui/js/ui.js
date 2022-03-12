@@ -77,6 +77,10 @@ class UI extends React.Component {
     // User has adjusted the AI configuration
     onPlayerAIChange(player_ai, value) {
         this.setState({[player_ai]: value});
+
+        if ('player'+turn()+'_ai' == player_ai) {
+            this.aiMove();
+        }
     }
 
     handleClick() {
@@ -141,6 +145,10 @@ class UI extends React.Component {
             .then(json => {
                 console.log(json.log);
                 location.hash = json.state;
+
+                if (this.state['player'+turn()+'_ai']) {
+                    this.aiMove();
+                }
             })
             .catch(console.error)
     }
