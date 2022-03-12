@@ -102,9 +102,13 @@ def think(state):
     state = state.lower()
     check_state(state)
 
-    p = Popen([ERASTUS] + ['-r'] + [state], stdout=PIPE, stderr=PIPE)
-    state = p.stdout.read().strip().decode('utf-8')
+    p = Popen([ERASTUS] + [state], stdout=PIPE, stderr=PIPE)
+    action = p.stdout.read().strip().decode('utf-8')
     log = p.stderr.read().decode('utf-8')
+
+    check_action(action)
+    p = Popen([ERASTUS] + ['-m'] + [action, state], stdout=PIPE, stderr=PIPE)
+    state = p.stdout.read().strip().decode('utf-8')
 
     response = jsonify({
         'state': state,
