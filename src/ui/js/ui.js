@@ -59,7 +59,6 @@ class UI extends React.Component {
         fetch(API_URL + '/act/' + location.hash.slice(1) + '/' + action)
             .then(response => response.json())
             .then(json => {
-                console.log(json.log);
                 location.hash = json.state;
 
                 if (this.state['player'+turn()+'_ai']) {
@@ -92,7 +91,6 @@ class UI extends React.Component {
         fetch(API_URL + '/actions/' + location.hash.slice(1))
             .then(response => response.json())
             .then(json => {
-                console.log(json.log);
                 this.setState({actions: json.actions});
             })
             .catch(console.error);
