@@ -81,11 +81,6 @@ void State_derive_actions(struct State *state)
         int pos = state->workers[state->turn][w];
         int height = State_height_at(state, pos);
 
-        if (height == 3) {
-            state->action_count = 0;
-            return;
-        }
-
         // Can move to adjacent spaces with height_at <= height+1
         uint_fast32_t blocked_for_move = blocked_for_all;
         for (int h = height+1; h < 3; h++) {
@@ -141,6 +136,19 @@ bool State_check_action(const struct State *state, const struct Action *action)
 {
     for (int i = 0; i < state->action_count; i++) {
         if (!memcmp(&state->actions[i], action, sizeof(struct Action))) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
+bool State_check_win(const struct State *state)
+{
+    for (int w = 0; w < 4; w++) {
+        int pos = state->workers[0][w];
+        if (State_height_at(state, pos) == 3) {
             return true;
         }
     }

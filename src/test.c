@@ -247,14 +247,6 @@ int main()
         }
     }
 
-    {
-        char state_string[STATE_STRING_SIZE] = "3000000000000000000000000a1d4c5b31";
-        State_from_string(&state, state_string);
-        if (state.action_count != 0) {
-            printf("actions despite win");
-        }
-    }
-
 
     // If there's a win, the first action slot should be a win
     {
@@ -269,6 +261,17 @@ int main()
 
         if (state.actions[0].build != WIN) {
             printf("No win found at actions[0] when win exists\n");
+        }
+    }
+
+
+    // No actions if there's a win
+    {
+        char state_string[] ="0000001031320301011000210c4e2a3b41";
+        State_from_string(&state, state_string);
+
+        if (!State_check_win(&state)) {
+            printf("win not detected\n");
         }
     }
 

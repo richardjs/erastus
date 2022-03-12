@@ -32,6 +32,11 @@ void check_state_string(char *state_string)
 
 void list_actions(const struct State *state)
 {
+    if (State_check_win(state)) {
+        fprintf(stderr, "state is a win; no actions\n");
+        return;
+    }
+
     fprintf(stderr, "%d actions\n", state->action_count);
     char action_string[ACTION_STRING_SIZE];
     for (int i = 0; i < state->action_count; i++) {
@@ -160,9 +165,7 @@ int main(int argc, char *argv[])
 
     struct State after = state;
     State_act(&after, &state.actions[results.actioni]);
-    if (after.action_count == 0) {
-        fprintf(stderr, "no more actions");
-    }
+    State_print(&after);
 
     return 0;
 }

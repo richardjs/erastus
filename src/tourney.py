@@ -3,19 +3,29 @@ import pickle
 import time
 from collections import Counter
 from datetime import timedelta
-from itertools import combinations, product
+from itertools import combinations
 from random import shuffle
 from statistics import mean
 from subprocess import Popen, PIPE
 from sys import stdout
 
 
+RULE_ENGINE = './erastus'
+
+
 results = []
 
 
 def move_state(state, action):
-    p = Popen(['./erastus'] + ['-m'] + [action, state], stdout=PIPE, stderr=PIPE)
+    '''Apply an action to a state, getting a new state'''
+    p = Popen([RULE_ENGINE] + ['-m'] + [action, state], stdout=PIPE, stderr=PIPE)
     return p.stdout.read().strip().decode('utf-8')
+
+
+def action_count(state):
+    '''Get the number of actions available from a state'''
+    p = Popen([RULE_ENGINE] + ['-l'] +  [state], stdout=PIPE, stderr=PIPE)
+    return len(p.stdout.readlines())
 
 
 class Results:
@@ -63,7 +73,9 @@ class Engine:
     def move(self, state):
         action, stderr = self.run(state, record_time=True)
         state = move_state(state, action)
-        winner = 'no more actions' in stderr
+
+        winner = action_count(state) == 0
+
         return state, winner
 
     def __repr__(self):
