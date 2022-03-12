@@ -23,12 +23,12 @@ class UI extends React.Component {
     }
 
     componentDidMount() {
-        resizeBoard();
+        this.handleHashChange();
     }
 
     render() {
         if (location.hash.length == 0) {
-            this.handleHashChange();
+            return e('div', null);
         }
 
         return e('div', null,
@@ -96,6 +96,8 @@ class UI extends React.Component {
                 this.setState({actions: json.actions});
             })
             .catch(console.error);
+
+        resizeBoard();
     }
 
     // User has clicked a Space component
