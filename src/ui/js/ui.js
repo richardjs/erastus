@@ -64,7 +64,7 @@ class UI extends React.Component {
             .then(json => {
                 location.hash = json.state;
 
-                if (this.state['player'+turn()+'_ai']) {
+                if (this.state['player'+turn()+'_ai'] && !action.endsWith('#')) {
                     this.aiMove();
                 }
             })
