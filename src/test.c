@@ -4,6 +4,7 @@
 #include <time.h>
 #include "bitops.h"
 #include "layout.h"
+#include "mcts.h"
 #include "state.h"
 
 
@@ -267,7 +268,7 @@ int main()
 
     // No actions if there's a win
     {
-        char state_string[] ="0000001031320301011000210c4e2a3b41";
+        char state_string[] = "0000001031320301011000210c4e2a3b41";
         State_from_string(&state, state_string);
 
         if (!State_check_win(&state)) {

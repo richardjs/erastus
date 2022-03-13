@@ -144,6 +144,14 @@ int main(int argc, char *argv[])
         break;
     }
 
+    if (state.actions[0].build == WIN) {
+        char action_string[ACTION_STRING_SIZE];
+        Action_to_string(&state.actions[0], action_string);
+        printf("%s\n", action_string);
+        fprintf(stderr, "taking win\n");
+        return 0;
+    }
+
     struct MCTSResults results;
     mcts(&state, &results, &options);
 
