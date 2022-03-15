@@ -82,7 +82,7 @@ void random_action(const struct State *state)
 
 int main(int argc, char *argv[])
 {
-    fprintf(stderr, "Erastus v.2a (built %s %s)\n", __DATE__, __TIME__);
+    fprintf(stderr, "Erastus v.3a (built %s %s)\n", __DATE__, __TIME__);
 
     time_t seed = time(NULL);
     srand(seed);
@@ -167,7 +167,9 @@ int main(int argc, char *argv[])
     fprintf(stderr, "iters/s:\t%ld\n",
         results.stats.duration ?
             1000 * results.stats.iterations / results.stats.duration : 0);
-    fprintf(stderr, "early terms:\t%d\n", results.stats.early_sim_terminations);
+    fprintf(stderr, "early terms:\t%.4g%%\n",
+        results.stats.simulations ?
+            100 * (float)results.stats.early_sim_terminations / results.stats.simulations : 0);
     fprintf(stderr, "sim depth out:\t%.4g%%\n",
         results.stats.simulations ?
             100 * (float)results.stats.depth_outs / results.stats.simulations : 0);
