@@ -13,6 +13,7 @@ int State_height_at(const struct State *state, int pos);
 int coords_to_spacei(const char* coords);
 void spacei_to_coords(int spacei, char* coords);
 uint8_t space_distance(uint8_t x, uint8_t y);
+bool State_unstoppable_win(const struct State *state);
 
 
 int main()
@@ -294,6 +295,23 @@ int main()
         }
         if (space_distance(3, 11) != 2) {
             printf("Invalid space distance for 4, 11\n");
+        }
+    }
+
+
+    // Basic unstoppable win tests
+    {
+        char state_string1[] = "0002100001000000000022000a5a1e1e51";
+        State_from_string(&state, state_string1);
+        if (!State_unstoppable_win(&state)) {
+            printf("Didn't detect unstoppable win\n");
+            State_print(&state);
+        }
+        char state_string2[] = "0002100001000000000022000a5a1e1e52";
+        State_from_string(&state, state_string2);
+        if (State_unstoppable_win(&state)) {
+            printf("Detected unstoppable win when there isn't\n");
+            State_print(&state);
         }
     }
 

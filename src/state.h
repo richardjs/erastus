@@ -21,9 +21,9 @@ enum Player {P1=0, P2};
 
 
 struct Action {
-    uint8_t source;
-    uint8_t dest;
-    uint8_t build;
+    uint_fast8_t source;
+    uint_fast8_t dest;
+    uint_fast8_t build;
 };
 
 
@@ -46,6 +46,8 @@ bool State_check_action(const struct State *state, const struct Action *action);
 void State_act(struct State *state, const struct Action *action);
 
 bool State_check_win(const struct State *state);
+
+bool State_unstoppable_win(const struct State *state);
 
 void State_print(const struct State *state);
 void State_print_debug(const struct State *state);
