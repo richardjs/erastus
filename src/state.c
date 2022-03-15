@@ -1,7 +1,16 @@
+#include <stdlib.h>
 #include <string.h>
 #include "bitops.h"
 #include "layout.h"
 #include "state.h"
+
+
+// TODO would it be worth it to put this in a lookup table?
+uint8_t space_distance(uint8_t x, uint8_t y) {
+    uint8_t dx = abs((x % 5) - (y % 5));
+    uint8_t dy = abs((x / 5) - (y / 5));
+    return dx > dy ? dx : dy;
+}
 
 
 bool State_is_start_phase(const struct State *state)

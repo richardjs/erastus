@@ -12,6 +12,7 @@ bool State_is_start_phase(const struct State *state);
 int State_height_at(const struct State *state, int pos);
 int coords_to_spacei(const char* coords);
 void spacei_to_coords(int spacei, char* coords);
+uint8_t space_distance(uint8_t x, uint8_t y);
 
 
 int main()
@@ -273,6 +274,26 @@ int main()
 
         if (!State_check_win(&state)) {
             printf("win not detected\n");
+        }
+    }
+
+
+    // space_distance
+    {
+        if (space_distance(0, 1) != 1) {
+            printf("Invalid space distance for 0, 1\n");
+        }
+        if (space_distance(0, 5) != 1) {
+            printf("Invalid space distance for 0, 5\n");
+        }
+        if (space_distance(0, 6) != 1) {
+            printf("Invalid space distance for 0, 6\n");
+        }
+        if (space_distance(0, 24) != 4) {
+            printf("Invalid space distance for 0, 24\n");
+        }
+        if (space_distance(3, 11) != 2) {
+            printf("Invalid space distance for 4, 11\n");
         }
     }
 
