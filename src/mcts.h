@@ -37,6 +37,7 @@ struct MCTSStats {
     uint64_t tree_bytes;
     uint16_t tree_depth;
     uint32_t simulations;
+    uint32_t early_sim_terminations;
     uint32_t depth_outs;
     uint64_t duration;
 };

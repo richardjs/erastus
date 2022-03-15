@@ -104,6 +104,11 @@ float simulate(struct State *state)
             return 0.0;
         }
 
+        if (State_unstoppable_win(state)) {
+            results->stats.early_sim_terminations++;
+            return turn == state->turn ? 1.0 : -1.0;
+        }
+
         // If there's a win, it will be placed in actions[0] during action derivation
         if (state->actions[0].build == WIN) {
             return turn == state->turn ? 1.0 : -1.0;

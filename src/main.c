@@ -167,6 +167,7 @@ int main(int argc, char *argv[])
     fprintf(stderr, "iters/s:\t%ld\n",
         results.stats.duration ?
             1000 * results.stats.iterations / results.stats.duration : 0);
+    fprintf(stderr, "early terms:\t%d\n", results.stats.early_sim_terminations);
     fprintf(stderr, "sim depth out:\t%.4g%%\n",
         results.stats.simulations ?
             100 * (float)results.stats.depth_outs / results.stats.simulations : 0);
