@@ -299,7 +299,7 @@ int main()
     }
 
 
-    // Basic unstoppable win tests
+    // Basic unstoppable win tests for 2-2 scenario
     {
         char state_string1[] = "0002100001000000000022000a5a1e1e51";
         State_from_string(&state, state_string1);
@@ -307,7 +307,35 @@ int main()
             printf("Didn't detect unstoppable win\n");
             State_print(&state);
         }
-        char state_string2[] = "0002100001000000000022000a5a1e1e52";
+        char state_string2[] = "2100000000000000010100010b1c2e4d41";
+        State_from_string(&state, state_string2);
+        if (State_unstoppable_win(&state)) {
+            printf("Detected unstoppable win when there isn't\n");
+            State_print(&state);
+        }
+    }
+
+    // Unstoppable win test with interposing worker
+    {
+        char state_string1[] = "1003101001000010011022000a5b4c3e51";
+        State_from_string(&state, state_string1);
+        if (!State_unstoppable_win(&state)) {
+            printf("Didn't detect unstoppable win with interposing worker\n");
+            State_print(&state);
+        }
+    }
+
+
+    // Unstoppable win for 1-2 scenario
+    {
+        char state_string1[] = "2100000000000000000100010b1c2e4e51";
+        State_from_string(&state, state_string1);
+        if (!State_unstoppable_win(&state)) {
+            printf("Didn't detect unstoppable win for 1-2\n");
+            State_print(&state);
+        }
+        puts("starting");
+        char state_string2[] = "2100000000000000000100020b1c2e4d41";
         State_from_string(&state, state_string2);
         if (State_unstoppable_win(&state)) {
             printf("Detected unstoppable win when there isn't\n");

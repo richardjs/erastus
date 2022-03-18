@@ -32,40 +32,78 @@ int State_height_at(const struct State *state, int pos)
 }
 
 
+// Note: technically this won't detect if opponent has a faster unstoppable win
 bool State_unstoppable_win(const struct State *state) {
     for (int w = 0; w < 2; w++) {
         uint_fast8_t worker_space = state->workers[state->turn][w];
-        if (State_height_at(state, worker_space) != 2) {
-            continue;
-        }
+        if (State_height_at(state, worker_space) == 1) {
+            bool adjacent_2 = false;
+            uint_fast32_t adjacents = ADJACENT_SPACES[worker_space];
+            while (adjacents) {
+                int adjacent = bitscan(adjacents);
+                adjacents ^= 1 << adjacent;
 
-        // TODO we could potentially benefit from bitboard of height 2 buildings
-        bool adjacent_2 = false;
-        uint_fast32_t adjacents = ADJACENT_SPACES[worker_space];
-        while (adjacents) {
-            int adjacent = bitscan(adjacents);
-            adjacents ^= 1 << adjacent;
+                if (State_height_at(state, adjacent) != 2) {
+                    continue;
+                }
 
-            if (State_height_at(state, adjacent) == 2) {
-                adjacent_2 = true;
-                break;
+                bool nearby_opponent_worker = false;
+                for (int o = 0; o < 2; o++) {
+                    int opponent_space = state->workers[!state->turn][o];
+                    int distance = space_distance(adjacent, opponent_space);
+                    if (distance <= 3) {
+                        nearby_opponent_worker = true;
+                        break;
+                    }
+                }
+
+                if (!nearby_opponent_worker) {
+                    return true;
+                }
             }
         }
+        else if (State_height_at(state, worker_space) == 2) {
+            // TODO we could potentially benefit from bitboard of height 2 buildings
+            bool adjacent_2 = false;
+            uint_fast32_t adjacents = ADJACENT_SPACES[worker_space];
+            while (adjacents) {
+                int adjacent = bitscan(adjacents);
+                adjacents ^= 1 << adjacent;
 
-        if (!adjacent_2) {
-            continue;
-        }
-
-        bool nearby_opponent_worker = false;
-        for (int o = 0; o < 2; o++) {
-            if (space_distance(worker_space, state->workers[!state->turn][o]) <= 2) {
-                nearby_opponent_worker = true;
-                break;
+                if (State_height_at(state, adjacent) == 2) {
+                    adjacent_2 = true;
+                    break;
+                }
             }
-        }
 
-        if (!nearby_opponent_worker) {
-            return true;
+            if (!adjacent_2) {
+                continue;
+            }
+
+            bool nearby_opponent_worker = false;
+            for (int o = 0; o < 2; o++) {
+                int opponent_space = state->workers[!state->turn][o];
+                int distance = space_distance(worker_space, opponent_space);
+                if (distance <= 2) {
+                    if (distance == 1) {
+                        nearby_opponent_worker = true;
+                        break;
+                    }
+
+                    // Test for interposing worker between space and opponent
+                    int other_worker_space = state->workers[state->turn][!w];
+                    if (other_worker_space == (worker_space + opponent_space) / 2) {
+                        continue;
+                    }
+
+                    nearby_opponent_worker = true;
+                    break;
+                }
+            }
+
+            if (!nearby_opponent_worker) {
+                return true;
+            }
         }
     }
 
