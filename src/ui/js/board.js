@@ -73,6 +73,9 @@ class Board extends React.Component {
             rows.push(e('div', {key: i, className: 'row'}, row));
         }
 
-        return e('div', {className: 'board'}, rows);
+        return e('div', null,
+            e('div', {className: 'board'}, rows),
+            e('div', null, 'Turn: ' + (this.props.notation[33] === '1' ? 'X' : 'O')),
+        );
     }
 }
