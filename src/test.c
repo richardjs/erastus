@@ -1,3 +1,4 @@
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -5,6 +6,7 @@
 #include "bitops.h"
 #include "layout.h"
 #include "mcts.h"
+#include "minimax.h"
 #include "state.h"
 
 
@@ -334,7 +336,6 @@ int main()
             printf("Didn't detect unstoppable win for 1-2\n");
             State_print(&state);
         }
-        puts("starting");
         char state_string2[] = "2100000000000000000100020b1c2e4d41";
         State_from_string(&state, state_string2);
         if (State_unstoppable_win(&state)) {
@@ -342,6 +343,31 @@ int main()
             State_print(&state);
         }
     }
+
+
+    // Test minimax win search, skipping opponent moves
+    {
+        //char state_string[] = "1000000000000000000000001b1b2d5d41";
+        char state_string[] = "2100000000000000001000001b1b2d5e41";
+        State_from_string(&state, state_string);
+        struct MinimaxResults results;
+        struct MinimaxOptions options;
+        MinimaxOptions_default(&options);
+        options.depth = 4;
+        options.skip_player = !state.turn;
+        minimax(&state, &results, &options);
+
+        printf("%f\n", results.score);
+        if (results.score != INFINITY) {
+            printf("Didn't find a win in minimax win search\n");
+        }
+        if (state.actions[results.actioni].source != 1
+                || state.actions[results.actioni].dest != 0
+                || state.actions[results.actioni].build != 1 ) {
+            printf("Incorrect move in minimax win search\n");
+        }
+    }
+
 
     printf("Done!\n");
     return 0;
