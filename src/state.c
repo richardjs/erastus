@@ -34,6 +34,12 @@ int State_height_at(const struct State *state, int pos)
 
 // Note: technically this won't detect if opponent has a faster win
 bool State_unstoppable_win(const struct State *state) {
+    // TODO store this on state?
+    uint_fast32_t worker_bitboard = 0;
+    for (int w = 0; w < 4; w++) {
+        worker_bitboard |= (1 << state->workers[0][w]);
+    }
+
     // Check each worker
     for (int w = 0; w < 2; w++) {
         uint_fast8_t worker_space = state->workers[state->turn][w];
@@ -44,6 +50,7 @@ bool State_unstoppable_win(const struct State *state) {
             // Check every adjacent space to see if it has height 2
             bool adjacent_2 = false;
             uint_fast32_t adjacents = ADJACENT_SPACES[worker_space];
+            adjacents &= (~worker_bitboard);
             while (adjacents) {
                 int adjacent = bitscan(adjacents);
                 adjacents ^= 1 << adjacent;
@@ -76,6 +83,7 @@ bool State_unstoppable_win(const struct State *state) {
             // TODO we could potentially benefit from bitboard of height 2 buildings
             bool adjacent_2 = false;
             uint_fast32_t adjacents = ADJACENT_SPACES[worker_space];
+            adjacents &= (~worker_bitboard);
             while (adjacents) {
                 int adjacent = bitscan(adjacents);
                 adjacents ^= 1 << adjacent;
