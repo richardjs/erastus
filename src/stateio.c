@@ -80,6 +80,7 @@ void State_print(const struct State *state)
 
         fprintf(stderr, "| - - + - - + - - + - - + - - |\n");
 	}
+    fprintf(stderr, "turn:\t%c\n", state->turn == 0 ? 'X' : 'O');
 }
 
 
