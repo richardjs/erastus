@@ -353,12 +353,11 @@ int main()
         struct MinimaxResults results;
         struct MinimaxOptions options;
         MinimaxOptions_default(&options);
-        options.depth = 4;
+        options.depth = 5;
         options.skip_player = !state.turn;
         minimax(&state, &results, &options);
 
-        printf("%f\n", results.score);
-        if (results.score != INFINITY) {
+        if (results.score <= 0) {
             printf("Didn't find a win in minimax win search\n");
         }
         if (state.actions[results.actioni].source != 1
