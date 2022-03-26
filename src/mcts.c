@@ -8,8 +8,8 @@
 
 
 // store these globally so we don't have to pass them around
-struct MCTSOptions options;
-struct MCTSResults *results;
+static struct MCTSOptions options;
+static struct MCTSResults *results;
 
 
 /**
@@ -141,6 +141,12 @@ float iterate(struct Node *root, struct State *state)
     if (state->actions[0].build == WIN) {
         root->visits++;
         root->value += 1.0;
+        return 1.0;
+    }
+    if (State_unstoppable_win(state)) {
+        root->visits++;
+        root->value += 1.0;
+        results->stats.tree_early_sim_terminations++;
         return 1.0;
     }
 

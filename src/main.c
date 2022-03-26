@@ -4,6 +4,7 @@
 #include <time.h>
 #include <unistd.h>
 #include "mcts.h"
+#include "minimax.h"
 #include "state.h"
 
 
@@ -126,6 +127,7 @@ int main(int argc, char *argv[])
     check_state_string(argv[optind]);
     struct State state;
     State_from_string(&state, argv[optind]);
+    fprintf(stderr, "input:\t\t%s\n", argv[optind]);
 
     switch (command) {
     case LIST_ACTIONS:
@@ -152,6 +154,30 @@ int main(int argc, char *argv[])
         return 0;
     }
 
+    if (State_unstoppable_win(&state)) {
+        fprintf(stderr, "unstoppable win detected; using one-sided minimax\n");
+
+        struct MinimaxResults results;
+        struct MinimaxOptions options;
+        options.depth = 7;
+        options.skip_player = !state.turn;
+
+        minimax(&state, &results, &options);
+
+        char action_string[ACTION_STRING_SIZE];
+        Action_to_string(&state.actions[results.actioni], action_string);
+        printf("%s\n", action_string);
+
+        fprintf(stderr, "action:\t%s\n", action_string);
+        fprintf(stderr, "score:\t%f\n", results.score);
+
+        struct State after = state;
+        State_act(&after, &state.actions[results.actioni]);
+        State_print(&after);
+
+        return 0;
+    }
+
     struct MCTSResults results;
     mcts(&state, &results, &options);
 
@@ -170,6 +196,9 @@ int main(int argc, char *argv[])
     fprintf(stderr, "early terms:\t%.4g%%\n",
         results.stats.simulations ?
             100 * (float)results.stats.early_sim_terminations / results.stats.simulations : 0);
+    fprintf(stderr, "tree terms:\t%.4g%%\n",
+        results.stats.iterations ?
+            100 * (float)results.stats.tree_early_sim_terminations / results.stats.iterations : 0);
     fprintf(stderr, "sim depth out:\t%.4g%%\n",
         results.stats.simulations ?
             100 * (float)results.stats.depth_outs / results.stats.simulations : 0);

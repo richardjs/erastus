@@ -22,11 +22,11 @@ float search(const struct State *state, int depth) {
     results->stats.nodes++;
 
     if (state->actions[0].build == WIN) {
-        return INFINITY;
+        return depth;
     }
 
     if (state->action_count == 0) {
-        return -INFINITY;
+        return -depth;
     }
 
     if (depth == 0) {
