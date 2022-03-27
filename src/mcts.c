@@ -143,7 +143,6 @@ float iterate(struct Node *root, struct State *state)
         root->value += 1.0;
         return 1.0;
     }
-    /*
     if (State_unstoppable_win(state)) {
         //State_print(state);
         root->visits++;
@@ -151,7 +150,6 @@ float iterate(struct Node *root, struct State *state)
         results->stats.tree_early_sim_terminations++;
         return 1.0;
     }
-    */
 
     if (!root->expanded) {
         Node_expand(root, state);
