@@ -103,6 +103,7 @@ bool State_unstoppable_win(const struct State *state) {
                 int opponent_space = state->workers[!state->turn][o];
                 int distance = space_distance(worker_space, opponent_space);
                 if (distance <= 2) {
+                    /*
                     if (distance == 1) {
                         nearby_opponent_worker = true;
                         break;
@@ -113,6 +114,7 @@ bool State_unstoppable_win(const struct State *state) {
                     if (other_worker_space == (worker_space + opponent_space) / 2) {
                         continue;
                     }
+                    */
 
                     nearby_opponent_worker = true;
                     break;

@@ -317,6 +317,10 @@ int main()
         }
     }
 
+
+    /*
+    Test disabled; the quick calculation was too simple and gave a
+    false positive for 0002000002000000200020000e2d2c2a51
     // Unstoppable win test with interposing worker
     {
         char state_string1[] = "1003101001000010011022000a5b4c3e51";
@@ -326,6 +330,7 @@ int main()
             State_print(&state);
         }
     }
+    */
 
 
     // Unstoppable win for 1-2 scenario
@@ -364,6 +369,18 @@ int main()
                 || state.actions[results.actioni].dest != 0
                 || state.actions[results.actioni].build != 1 ) {
             printf("Incorrect move in minimax win search\n");
+        }
+    }
+
+    // Test for bug--this state was detected as an unstoppable win
+    {
+        puts("starting");
+        char state_string[] = "0002000002000000200020000e2d2c2a51";
+        State_from_string(&state, state_string);
+
+        if (State_unstoppable_win(&state)) {
+            printf("Wrongly detected unstoppable win here:\n");
+            State_print(&state);
         }
     }
 
