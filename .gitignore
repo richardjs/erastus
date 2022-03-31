@@ -1,4 +1,5 @@
 *.o
 src/erastus
 src/test
+src/benchmark
 __pycache__/

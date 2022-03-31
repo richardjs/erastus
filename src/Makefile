@@ -14,6 +14,9 @@ erastus: $(objects) main.o
 test: $(objects)
 
 
+benchmark: $(objects)
+
+
 api: erastus
 	gunicorn -b 0.0.0.0:5000 api:app
 
@@ -25,6 +28,7 @@ api-dev: erastus
 clean:
 	rm -f *.o
 	rm -f test
+	rm -f benchmark
 
 
 .phony: all api api-dev clean
