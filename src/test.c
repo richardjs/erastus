@@ -333,23 +333,6 @@ int main()
     */
 
 
-    // Unstoppable win for 1-2 scenario
-    {
-        char state_string1[] = "2100000000000000000100010b1c2e4e51";
-        State_from_string(&state, state_string1);
-        if (!State_unstoppable_win(&state)) {
-            printf("Didn't detect unstoppable win for 1-2\n");
-            State_print(&state);
-        }
-        char state_string2[] = "2100000000000000000100020b1c2e4d41";
-        State_from_string(&state, state_string2);
-        if (State_unstoppable_win(&state)) {
-            printf("Detected unstoppable win when there isn't\n");
-            State_print(&state);
-        }
-    }
-
-
     // Test minimax win search, skipping opponent moves
     {
         //char state_string[] = "1000000000000000000000001b1b2d5d41";
