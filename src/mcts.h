@@ -9,7 +9,7 @@
 #define DEFAULT_MAX_SIM_DEPTH 500
 #define DEFAULT_UCTC 1
 #define DEFAULT_SAVE_TREE false
-#define DEFAULT_DOWN_PASS_RATE .8
+#define DEFAULT_DOWN_PASS_RATE .99
 
 
 struct Node {
