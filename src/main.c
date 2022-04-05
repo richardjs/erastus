@@ -83,7 +83,7 @@ void random_action(const struct State *state)
 
 int main(int argc, char *argv[])
 {
-    fprintf(stderr, "Erastus v.5 (built %s %s)\n", __DATE__, __TIME__);
+    fprintf(stderr, "Erastus v.6 (built %s %s)\n", __DATE__, __TIME__);
 
     time_t seed = time(NULL);
     srand(seed);
@@ -155,6 +155,31 @@ int main(int argc, char *argv[])
         printf("%s\n", action_string);
         fprintf(stderr, "taking win\n");
         return 0;
+    }
+
+    if (State_is_start_phase(&state)) {
+        fprintf(stderr, "start phase; using hardcoded action\n");
+        struct Action actions[4];
+        for (int i = 0; i < 4; i++) {
+            actions[i].build = PLACE;
+        }
+        actions[0].source = 7;
+        actions[0].dest = 17;
+        actions[1].source = 11;
+        actions[1].dest = 13;
+        actions[2].source = 6;
+        actions[2].dest = 18;
+        actions[3].source = 8;
+        actions[3].dest = 16;
+
+        for (int i = 0; i < 4; i++) {
+            if (State_check_action(&state, &actions[i])) {
+                char action_string[ACTION_STRING_SIZE];
+                Action_to_string(&actions[i], action_string);
+                printf("%s\n", action_string);
+                return 0;
+            }
+        }
     }
 
     if (State_unstoppable_win(&state)) {

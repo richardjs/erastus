@@ -45,6 +45,8 @@ void State_derive(struct State *state);
 bool State_check_action(const struct State *state, const struct Action *action);
 void State_act(struct State *state, const struct Action *action);
 
+bool State_is_start_phase(const struct State *state);
+
 int State_height_at(const struct State *state, int pos);
 
 bool State_check_win(const struct State *state);
