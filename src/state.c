@@ -32,7 +32,6 @@ int State_height_at(const struct State *state, int pos)
 }
 
 
-// Note: technically this won't detect if opponent has a faster win
 bool State_unstoppable_win(const struct State *state) {
     // TODO store this on state?
     uint_fast32_t worker_bitboard = 0;

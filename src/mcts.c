@@ -31,6 +31,7 @@ void MCTSOptions_default(struct MCTSOptions *o)
 {
         o->iterations = DEFAULT_ITERATIONS;
         o->uctc = DEFAULT_UCTC;
+        o->down_pass_rate = DEFAULT_DOWN_PASS_RATE;
         o->max_sim_depth = DEFAULT_MAX_SIM_DEPTH;
         o->save_tree = DEFAULT_SAVE_TREE;
 }
@@ -113,8 +114,26 @@ float simulate(struct State *state)
         if (state->actions[0].build == WIN) {
             return turn == state->turn ? 1.0 : -1.0;
         } else {
-            struct Action action = state->actions[rand() % state->action_count];
+            int tries = 0;
+            struct Action action;
+            while (tries < 100) {
+                tries++;
+
+                action = state->actions[rand() % state->action_count];
+
+                uint_fast8_t source_height = State_height_at(state, action.source);
+                uint_fast8_t dest_height = State_height_at(state, action.dest);
+                if (dest_height < source_height) {
+                    if ((rand() / (float) RAND_MAX) < options.down_pass_rate) {
+                        continue;
+                    }
+                }
+
+                break;
+            }
+
             State_act(state, &action);
+
         }
     }
 

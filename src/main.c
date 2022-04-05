@@ -83,7 +83,7 @@ void random_action(const struct State *state)
 
 int main(int argc, char *argv[])
 {
-    fprintf(stderr, "Erastus v.4 (built %s %s)\n", __DATE__, __TIME__);
+    fprintf(stderr, "Erastus v.5a (built %s %s)\n", __DATE__, __TIME__);
 
     time_t seed = time(NULL);
     srand(seed);
@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
     struct Action action;
 
     int opt;
-    while ((opt = getopt(argc, argv, "vlm:ri:c:")) != -1) {
+    while ((opt = getopt(argc, argv, "vlm:ri:c:d:")) != -1) {
         switch (opt) {
         case 'v':
             return 0;
@@ -115,6 +115,9 @@ int main(int argc, char *argv[])
             break;
         case 'c':
             options.uctc = atof(optarg);
+            break;
+        case 'd':
+            options.down_pass_rate = atof(optarg);
             break;
         }
     }

@@ -9,6 +9,7 @@
 #define DEFAULT_MAX_SIM_DEPTH 500
 #define DEFAULT_UCTC 1
 #define DEFAULT_SAVE_TREE false
+#define DEFAULT_DOWN_PASS_RATE .8
 
 
 struct Node {
@@ -26,6 +27,7 @@ struct Node {
 struct MCTSOptions {
     uint64_t iterations;
     float uctc;
+    float down_pass_rate;
     uint16_t max_sim_depth;
     bool save_tree;
 };
