@@ -1,6 +1,10 @@
 #include <ctype.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <sys/time.h>
+#include <sys/wait.h>
 #include <time.h>
 #include <unistd.h>
 #include "mcts.h"
@@ -83,12 +87,13 @@ void random_action(const struct State *state)
 
 int main(int argc, char *argv[])
 {
-    fprintf(stderr, "Erastus v.6 (built %s %s)\n", __DATE__, __TIME__);
+    fprintf(stderr, "Erastus v.7 (built %s %s)\n", __DATE__, __TIME__);
 
     time_t seed = time(NULL);
     srand(seed);
 
     enum Command command = THINK;
+    int workers = 1;
 
     struct MCTSOptions options;
     MCTSOptions_default(&options);
@@ -96,7 +101,7 @@ int main(int argc, char *argv[])
     struct Action action;
 
     int opt;
-    while ((opt = getopt(argc, argv, "vlm:ri:c:d:")) != -1) {
+    while ((opt = getopt(argc, argv, "vlm:ri:c:d:w:")) != -1) {
         switch (opt) {
         case 'v':
             return 0;
@@ -118,6 +123,9 @@ int main(int argc, char *argv[])
             break;
         case 'd':
             options.down_pass_rate = atof(optarg);
+            break;
+        case 'w':
+            workers = atoi(optarg);
             break;
         }
     }
@@ -206,8 +214,56 @@ int main(int argc, char *argv[])
         return 0;
     }
 
+    int pipefd[2];
+    pipe(pipefd);
+
+    for (int i = 0; i < workers; i++) {
+        srand(rand());
+        if (fork() > 0) {
+            continue;
+        }
+        struct MCTSResults results;
+        mcts(&state, &results, &options);
+        write(pipefd[1], &results, sizeof(struct MCTSResults));
+        exit(0);
+    }
+
     struct MCTSResults results;
-    mcts(&state, &results, &options);
+    memset(&results, 0, sizeof(struct MCTSResults));
+
+    struct timeval start;
+    gettimeofday(&start, NULL);
+
+    for (int i = 0; i < workers; i++) {
+        wait(NULL);
+
+        struct MCTSResults worker_results;
+        read(pipefd[0], &worker_results, sizeof(struct MCTSResults));
+
+        for (int j = 0; j < state.action_count; j++) {
+            results.nodes[j].visits += worker_results.nodes[j].visits;
+            results.nodes[j].value += worker_results.nodes[j].value;
+        }
+
+        results.stats.iterations += worker_results.stats.iterations;
+        results.stats.nodes += worker_results.stats.nodes;
+        results.stats.tree_bytes += worker_results.stats.tree_bytes;
+        results.stats.simulations += worker_results.stats.simulations;
+    }
+
+    struct timeval end;
+    gettimeofday(&end, NULL);
+    results.stats.duration = (end.tv_sec - start.tv_sec)*1000 + (end.tv_usec - start.tv_usec)/1000;
+
+    results.score = -INFINITY;
+    for (int i = 0; i < state.action_count; i++) {
+        float score = -1 * results.nodes[i].value / results.nodes[i].visits;
+
+        if (score >= results.score) {
+            results.score = score;
+            results.actioni = i;
+        }
+    }
 
     char action_string[ACTION_STRING_SIZE];
     Action_to_string(&state.actions[results.actioni], action_string);
@@ -216,24 +272,14 @@ int main(int argc, char *argv[])
     fprintf(stderr, "action:\t\t%s\n", action_string);
     fprintf(stderr, "score\t\t%f\n", results.score);
 
+    fprintf(stderr, "workers:\t%d\n", workers);
     fprintf(stderr, "time:\t\t%ld ms\n", results.stats.duration);
     fprintf(stderr, "iterations:\t%ld\n", results.stats.iterations);
     fprintf(stderr, "iters/s:\t%ld\n",
         results.stats.duration ?
             1000 * results.stats.iterations / results.stats.duration : 0);
-    fprintf(stderr, "early terms:\t%.4g%%\n",
-        results.stats.simulations ?
-            100 * (float)results.stats.early_sim_terminations / results.stats.simulations : 0);
-    fprintf(stderr, "tree terms:\t%.4g%%\n",
-        results.stats.iterations ?
-            100 * (float)results.stats.tree_early_sim_terminations / results.stats.iterations : 0);
-    fprintf(stderr, "sim depth out:\t%.4g%%\n",
-        results.stats.simulations ?
-            100 * (float)results.stats.depth_outs / results.stats.simulations : 0);
-    fprintf(stderr, "tree depth:\t%d\n", results.stats.tree_depth);
     fprintf(stderr, "tree size:\t%ld MiB\n",
         results.stats.tree_bytes / 1024 / 1024);
-    fprintf(stderr, "UCTC:\t\t%g\n", options.uctc);
 
     struct State after = state;
     State_act(&after, &state.actions[results.actioni]);
