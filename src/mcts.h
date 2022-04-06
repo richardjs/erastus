@@ -49,6 +49,7 @@ struct MCTSResults {
     uint16_t actioni;
     float score;
     struct MCTSStats stats;
+    struct Node nodes[MAX_ACTIONS];
     struct Node *tree;
 };
 

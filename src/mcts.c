@@ -254,6 +254,10 @@ void mcts(const struct State *state, struct MCTSResults *r, const struct MCTSOpt
         }
     }
 
+    for (int i = 0; i < state->action_count; i++) {
+        results->nodes[i] = *root->children[i];
+    }
+
     if (options.save_tree) {
         results->tree = root;
     } else {
