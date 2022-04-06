@@ -87,7 +87,7 @@ void random_action(const struct State *state)
 
 int main(int argc, char *argv[])
 {
-    fprintf(stderr, "Erastus v.7 (built %s %s)\n", __DATE__, __TIME__);
+    fprintf(stderr, "Erastus v.7.1 (built %s %s)\n", __DATE__, __TIME__);
 
     time_t seed = time(NULL);
     srand(seed);
@@ -139,6 +139,7 @@ int main(int argc, char *argv[])
     struct State state;
     State_from_string(&state, argv[optind]);
     fprintf(stderr, "input:\t\t%s\n", argv[optind]);
+    State_print(&state);
 
     switch (command) {
     case LIST_ACTIONS:
@@ -191,12 +192,11 @@ int main(int argc, char *argv[])
     }
 
     if (State_unstoppable_win(&state)) {
-        fprintf(stderr, "unstoppable win detected; using one-sided minimax\n");
+        fprintf(stderr, "unstoppable win detected; using minimax\n");
 
         struct MinimaxResults results;
         struct MinimaxOptions options;
-        options.depth = 7;
-        options.skip_player = !state.turn;
+        options.depth = 3;
 
         minimax(&state, &results, &options);
 

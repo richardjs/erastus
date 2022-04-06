@@ -9,7 +9,6 @@ static struct MinimaxResults *results;
 
 void MinimaxOptions_default(struct MinimaxOptions *options) {
     options->depth = 3;
-    options->skip_player = -1;
 }
 
 
@@ -34,12 +33,6 @@ float search(const struct State *state, int depth) {
         return evaluate(state);
     }
 
-    if (state->turn == options.skip_player) {
-       struct State child = *state;
-       child.turn = !state->turn;
-       State_derive(&child);
-       return -search(&child, depth - 1);
-    }
 
     float best_score = -INFINITY;
     for (int i = 0; i < state->action_count; i++) {
