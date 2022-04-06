@@ -33,6 +33,24 @@ int State_height_at(const struct State *state, int pos)
 
 
 bool State_unstoppable_win(const struct State *state) {
+    // Look to see if opponent is about to win (in which case return false)
+    for (int w = 0; w < 2; w++) {
+        uint_fast8_t worker_space = state->workers[!state->turn][w];
+        if (State_height_at(state, worker_space) != 2) {
+            continue;
+        }
+
+        uint_fast32_t adjacents = ADJACENT_SPACES[worker_space];
+        while (adjacents) {
+            int adjacent = bitscan(adjacents);
+            adjacents ^= 1 << adjacent;
+
+            if (State_height_at(state, adjacent) == 3) {
+                return false;
+            }
+        }
+    }
+
     // TODO store this on state?
     uint_fast32_t worker_bitboard = 0;
     for (int w = 0; w < 4; w++) {
