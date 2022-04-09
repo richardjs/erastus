@@ -7,7 +7,8 @@ class AIOptions extends React.Component {
 
     render() {
         return e('div', {className: 'ai-options'},
-            e('h6', {className: 'lead'}, 'AI Options'),
+            e('h6', {className: 'lead'},
+                'AI' + (this.props.waitingForAI ? ' (thinking)' : '')),
             e('div', {className: 'form-check'},
                 e('input', {
                     className: 'form-check-input',

@@ -7,6 +7,7 @@ class UI extends React.Component {
             inputBuffer: [],
             player1_ai: false,
             player2_ai: true,
+            waitingForAI: false,
         };
 
         this.onAction = this.onAction.bind(this);
@@ -43,6 +44,7 @@ class UI extends React.Component {
                 e(AIOptions, {
                     player1_ai: this.state.player1_ai,
                     player2_ai: this.state.player2_ai,
+                    waitingForAI: this.state.waitingForAI,
                     onPlayerAIChange: this.onPlayerAIChange,
                 }),
             ),
@@ -135,12 +137,13 @@ class UI extends React.Component {
     }
 
     aiMove() {
-        this.setState({actions: []});
+        this.setState({actions: [], waitingForAI: true});
 
         fetch(API_URL + '/think/' + location.hash.slice(1))
             .then(response => response.json())
             .then(json => {
                 console.log(json.log);
+                this.setState({waitingForAI: false});
                 location.hash = json.state;
 
                 if (this.state['player'+turn()+'_ai']) {
