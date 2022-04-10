@@ -1,5 +1,11 @@
 function ai_player_controls(n) {
-    return e('div', {className: 'form-check'},
+    return e('div', {
+        className: 'form-check col-sm-3',
+    },
+        e('label', {
+            htmlFor: 'player'+n+'_ai',
+            className: 'form-check-label',
+        }, 'Player '+n),
         e('input', {
             type: 'checkbox',
             id: 'player'+n+'_ai',
@@ -7,10 +13,6 @@ function ai_player_controls(n) {
             checked: this.props['player'+n+'_ai'],
             onChange: this.handlePlayerAIChange,
         }),
-        e('label', {
-            htmlFor: 'player'+n+'_ai',
-            className: 'form-check-label',
-        }, 'Player '+n),
     );
 }
 
@@ -90,8 +92,17 @@ class AIOptions extends React.Component {
                     }),
                 ),
             ),
-            ai_player_controls.bind(this)(1),
-            ai_player_controls.bind(this)(2),
+            e('div', {
+                className: 'row',
+            },
+                e('div', {className: 'col-sm-1'}),
+                ai_player_controls.bind(this)(1),
+                ai_player_controls.bind(this)(2),
+                e('div', {className: 'col-sm-2'}),
+                e('div', {
+                    className: 'col-sm-3',
+                }, 'Score: ' + this.props.score),
+            ),
         );
     }
 

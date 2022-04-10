@@ -270,7 +270,7 @@ int main(int argc, char *argv[])
     printf("%s\n", action_string);
 
     fprintf(stderr, "action:\t\t%s\n", action_string);
-    fprintf(stderr, "score\t\t%f\n", results.score);
+    fprintf(stderr, "score:\t\t%.4f\n", results.score);
 
     fprintf(stderr, "iterations:\t%ld\n", results.stats.iterations);
     fprintf(stderr, "workers:\t%d\n", workers);

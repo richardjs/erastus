@@ -6,6 +6,7 @@ class UI extends React.Component {
             actions: [],
             inputBuffer: [],
             waitingForAI: false,
+            score: 'n\\a',
             iterations: localStorage.getItem('iterations') || 50000,
             workers: localStorage.getItem('workers') || 4,
             player1_ai: localStorage.getItem('player1_ai') ? true : false,
@@ -51,6 +52,7 @@ class UI extends React.Component {
                     player1_ai: this.state.player1_ai,
                     player2_ai: this.state.player2_ai,
                     waitingForAI: this.state.waitingForAI,
+                    score: this.state.score,
                     handleIterationsChange: this.handleIterationsChange,
                     handleWorkersChange: this.handleWorkersChange,
                     onPlayerAIChange: this.onPlayerAIChange,
@@ -175,6 +177,16 @@ class UI extends React.Component {
             .then(response => response.json())
             .then(json => {
                 console.log(json.log);
+
+                let logLines = json.log.split('\n');
+                for (let i = 0; i < logLines.length; i++) {
+                    let line = logLines[i];
+                    if (!line.startsWith('score')) continue;
+
+                    let score = line.split('\t').at(-1);
+                    this.setState({score: score});
+                }
+
                 this.setState({waitingForAI: false});
                 location.hash = json.state;
             })
