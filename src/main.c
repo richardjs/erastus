@@ -272,9 +272,9 @@ int main(int argc, char *argv[])
     fprintf(stderr, "action:\t\t%s\n", action_string);
     fprintf(stderr, "score\t\t%f\n", results.score);
 
+    fprintf(stderr, "iterations:\t%ld\n", results.stats.iterations);
     fprintf(stderr, "workers:\t%d\n", workers);
     fprintf(stderr, "time:\t\t%ld ms\n", results.stats.duration);
-    fprintf(stderr, "iterations:\t%ld\n", results.stats.iterations);
     fprintf(stderr, "iters/s:\t%ld\n",
         results.stats.duration ?
             1000 * results.stats.iterations / results.stats.duration : 0);

@@ -5,6 +5,11 @@ from flask import abort, Flask, jsonify, request, Response
 
 ERASTUS = './erastus'
 
+MAX_ITERATIONS = 200000
+MIN_ITERATIONS = 10000
+MAX_WORKERS = 8
+MIN_WORKERS = 1
+
 
 app = Flask(__name__)
 
@@ -27,7 +32,6 @@ def check_action(action):
 def actions_options(state):
     response = Response()
     response.headers['Access-Control-Allow-Origin'] = '*'
-    response.headers['Access-Control-Allow-Headers'] = 'Iterations, Mode'
 
     return response
 
@@ -90,7 +94,6 @@ def act(state, action):
     })
 
     response.headers['Access-Control-Allow-Origin'] = '*'
-    response.headers['Access-Control-Allow-Headers'] = 'Iterations, Move'
 
     return response
 
@@ -99,7 +102,7 @@ def act(state, action):
 def think_options(state):
     response = Response()
     response.headers['Access-Control-Allow-Origin'] = '*'
-    response.headers['Access-Control-Allow-Headers'] = 'Iterations, Mode'
+    response.headers['Access-Control-Allow-Headers'] = 'iterations, workers'
 
     return response
 
@@ -109,7 +112,23 @@ def think(state):
     state = state.lower()
     check_state(state)
 
-    p = Popen([ERASTUS] + [state], stdout=PIPE, stderr=PIPE)
+    iterations = 10000
+    workers = 1
+
+    if 'Iterations' in request.headers:
+        iterations = min(int(request.headers['Iterations']), MAX_ITERATIONS)
+        iterations = max(iterations, MIN_ITERATIONS)
+    if 'Workers' in request.headers:
+        workers = min(int(request.headers['Workers']), MAX_WORKERS)
+        workers = max(workers, MIN_WORKERS)
+
+    p = Popen(
+        [ERASTUS]
+        + ['-i', str(iterations)]
+        + ['-w', str(workers)]
+        + [state],
+    stdout=PIPE, stderr=PIPE)
+
     action = p.stdout.read().strip().decode('utf-8')
     log = p.stderr.read().decode('utf-8')
 
@@ -122,7 +141,7 @@ def think(state):
         'log': log,
     })
 
-    response.headers['Access-Control-Allow-Origin'] = '*'
-    response.headers['Access-Control-Allow-Headers'] = 'Iterations, Move'
+    response.headers['Access-Control-Allow-Origin']='*'
+    response.headers['Access-Control-Allow-Headers']='iterations, workers'
 
     return response

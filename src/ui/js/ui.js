@@ -5,6 +5,8 @@ class UI extends React.Component {
         this.state = {
             actions: [],
             inputBuffer: [],
+            iterations: 50000,
+            workers: 2,
             player1_ai: false,
             player2_ai: true,
             waitingForAI: false,
@@ -12,6 +14,8 @@ class UI extends React.Component {
 
         this.onAction = this.onAction.bind(this);
         this.onPlayerAIChange = this.onPlayerAIChange.bind(this);
+        this.handleIterationsChange = this.handleIterationsChange.bind(this);
+        this.handleWorkersChange = this.handleWorkersChange.bind(this);
         this.handleClick = this.handleClick.bind(this);
         this.handleHashChange = this.handleHashChange.bind(this);
         this.handleSpaceClick = this.handleSpaceClick.bind(this);
@@ -42,9 +46,13 @@ class UI extends React.Component {
             ),
             e('div', {className: 'row mt-4'},
                 e(AIOptions, {
+                    iterations: this.state.iterations,
+                    workers: this.state.workers,
                     player1_ai: this.state.player1_ai,
                     player2_ai: this.state.player2_ai,
                     waitingForAI: this.state.waitingForAI,
+                    handleIterationsChange: this.handleIterationsChange,
+                    handleWorkersChange: this.handleWorkersChange,
                     onPlayerAIChange: this.onPlayerAIChange,
                 }),
             ),
@@ -76,6 +84,14 @@ class UI extends React.Component {
         if ('player'+turn()+'_ai' == player_ai) {
             this.aiMove();
         }
+    }
+
+    handleIterationsChange(e) {
+        this.setState({iterations: e.target.value});
+    }
+
+    handleWorkersChange(e) {
+        this.setState({workers: e.target.value});
     }
 
     handleClick() {
@@ -143,7 +159,12 @@ class UI extends React.Component {
 
         this.setState({actions: [], waitingForAI: true});
 
-        fetch(API_URL + '/think/' + location.hash.slice(1))
+        fetch(API_URL + '/think/' + location.hash.slice(1), {
+            headers: [
+                ['Iterations', this.state.iterations],
+                ['Workers', this.state.workers]
+            ]
+        })
             .then(response => response.json())
             .then(json => {
                 console.log(json.log);
