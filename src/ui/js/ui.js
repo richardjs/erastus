@@ -5,11 +5,11 @@ class UI extends React.Component {
         this.state = {
             actions: [],
             inputBuffer: [],
-            iterations: 50000,
-            workers: 2,
-            player1_ai: false,
-            player2_ai: true,
             waitingForAI: false,
+            iterations: localStorage.getItem('iterations') || 50000,
+            workers: localStorage.getItem('workers') || 4,
+            player1_ai: localStorage.getItem('player1_ai') ? true : false,
+            player2_ai: localStorage.getItem('player2_ai') ? true : false,
         };
 
         this.onAction = this.onAction.bind(this);
@@ -80,6 +80,11 @@ class UI extends React.Component {
     // User has adjusted the AI configuration
     onPlayerAIChange(player_ai, value) {
         this.setState({[player_ai]: value});
+        if (value) {
+            localStorage.setItem(player_ai, value);
+        } else {
+            localStorage.removeItem(player_ai);
+        }
 
         if ('player'+turn()+'_ai' == player_ai) {
             this.aiMove();
@@ -88,10 +93,12 @@ class UI extends React.Component {
 
     handleIterationsChange(e) {
         this.setState({iterations: e.target.value});
+        localStorage.setItem('iterations', e.target.value);
     }
 
     handleWorkersChange(e) {
         this.setState({workers: e.target.value});
+        localStorage.setItem('workers', e.target.value);
     }
 
     handleClick() {
