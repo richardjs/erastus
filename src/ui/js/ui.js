@@ -65,10 +65,6 @@ class UI extends React.Component {
             .then(response => response.json())
             .then(json => {
                 location.hash = json.state;
-
-                if (this.state['player'+turn()+'_ai'] && !action.endsWith('#')) {
-                    this.aiMove();
-                }
             })
             .catch(console.error);
     }
@@ -101,6 +97,10 @@ class UI extends React.Component {
             .then(response => response.json())
             .then(json => {
                 this.setState({actions: json.actions});
+
+                if (this.state['player'+turn()+'_ai']) {
+                    this.aiMove();
+                }
             })
             .catch(console.error);
 
@@ -137,6 +137,10 @@ class UI extends React.Component {
     }
 
     aiMove() {
+        if (this.state.actions.length === 0) {
+            return;
+        }
+
         this.setState({actions: [], waitingForAI: true});
 
         fetch(API_URL + '/think/' + location.hash.slice(1))
@@ -145,10 +149,6 @@ class UI extends React.Component {
                 console.log(json.log);
                 this.setState({waitingForAI: false});
                 location.hash = json.state;
-
-                if (this.state['player'+turn()+'_ai']) {
-                    this.aiMove();
-                }
             })
             .catch(console.error)
     }
