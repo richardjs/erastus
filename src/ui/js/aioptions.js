@@ -31,7 +31,7 @@ class AIOptions extends React.Component {
                    onClick: this.props.handleHintClick,
                    disabled: this.props.waitingForHint || this.props.waitingForAI,
                 },
-                    'Hint'
+                    this.props.waitingForHint ? 'Thinking...' : 'Hint'
                 ),
             );
         }
