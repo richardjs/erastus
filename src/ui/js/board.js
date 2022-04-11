@@ -3,15 +3,24 @@ class Space extends React.Component {
         let className = 'col fs-1 space';
         className += ' level-' + this.props.level;
 
+        if (this.props.hint === 'source') {
+            className += ' hint-source';
+        }
+
         if (this.props.inInputBuffer) {
             className += ' inputBuffer';
+        }
+
+        let contents = ['', 'X', 'O'][this.props.worker];
+        if (this.props.hint !== null && this.props.hint !== 'source') {
+            contents = this.props.hint;
         }
 
         return e('button', {
             className: className,
             disabled: !this.props.active,
             onClick: this.props.handleClick.bind(this, this.props.spacei),
-        }, ['', 'X', 'O'][this.props.worker]);
+        }, contents);
     }
 }
 
@@ -60,12 +69,22 @@ class Board extends React.Component {
                     active = false;
                 }
 
+                let hint = null;
+                if (this.props.hintSpaces[0] == spacei) {
+                    hint = 'source';
+                } else if (this.props.hintSpaces[1] == spacei) {
+                    hint = '_';
+                } else if (this.props.hintSpaces[2] == spacei) {
+                    hint = '^';
+                }
+
                 row.push(e(Space, {key: j,
                     spacei: spacei,
                     handleClick: this.props.handleSpaceClick,
                     level: parseInt(this.props.notation[spacei]),
                     worker: worker,
                     active: active,
+                    hint: hint,
                     inInputBuffer: this.props.inputBuffer.includes(spacei),
                 }));
             }

@@ -11,6 +11,7 @@ class UI extends React.Component {
             waitingForHint: false,
             score: 'n\\a',
             hint: null,
+            hintSpaces: [],
             iterations: localStorage.getItem('iterations') || 50000,
             workers: localStorage.getItem('workers') || 4,
             player1_ai: localStorage.getItem('player1_ai') ? true : false,
@@ -45,6 +46,7 @@ class UI extends React.Component {
                     notation: location.hash.slice(1),
                     actions: this.state.actions,
                     inputBuffer: this.state.inputBuffer,
+                    hintSpaces: this.state.hintSpaces,
                     player1_ai: this.state.player1_ai,
                     player2_ai: this.state.player2_ai,
                     holdAI: this.state.holdAI,
@@ -140,8 +142,10 @@ class UI extends React.Component {
                 this.setState({
                     score: score,
                     hint: json.action,
+                    hintSpaces: json.action.split(/\&|-|\+/).map(coordsToSpace),
                     waitingForHint: false,
                 });
+
 
             })
             .catch(console.error)
@@ -179,6 +183,7 @@ class UI extends React.Component {
             stateChange: false,
             waitingForHint: false,
             hint: null,
+            hintSpaces: [],
         });
 
         // When the hash changes, get the actions from the server

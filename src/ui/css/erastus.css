@@ -31,10 +31,14 @@ body {
     background: #000;
 }
 
-.inputBuffer {
-    border: 2px dashed;
-}
-
 .ai-options {
     background: white;
+}
+
+.hint-source {
+    text-decoration: underline;
+}
+
+.inputBuffer {
+    border: 2px dashed;
 }
