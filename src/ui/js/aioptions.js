@@ -1,27 +1,44 @@
-function ai_player_controls(n) {
-    return e('div', {
-        className: 'form-check col-3',
-    },
-        e('label', {
-            htmlFor: 'player'+n+'_ai',
-            className: 'form-check-label',
-        }, 'Player '+n),
-        e('input', {
-            type: 'checkbox',
-            id: 'player'+n+'_ai',
-            className: 'form-check-input',
-            checked: this.props['player'+n+'_ai'],
-            onChange: this.handlePlayerAIChange,
-        }),
-    );
-}
-
-
 class AIOptions extends React.Component {
     constructor(props) {
         super(props);
 
         this.handlePlayerAIChange = this.handlePlayerAIChange.bind(this)
+    }
+
+    ai_player_controls(n) {
+        return e('div', {
+            className: 'form-check col-1',
+        },
+            e('label', {
+                htmlFor: 'player'+n+'_ai',
+                className: 'form-check-label',
+            }, n == 1 ? 'X' : 'O'),
+            e('input', {
+                type: 'checkbox',
+                id: 'player'+n+'_ai',
+                className: 'form-check-input',
+                checked: this.props['player'+n+'_ai'],
+                onChange: this.handlePlayerAIChange,
+            }),
+        );
+    }
+
+    hintButton() {
+        if (this.props.hint === null) {
+            return e('div', {className: 'col-3'},
+                e('button', {
+                   className: 'btn btn-sm btn-secondary',
+                   onClick: this.props.handleHintClick,
+                   disabled: this.props.waitingForHint,
+                },
+                    'Hint'
+                ),
+            );
+        }
+
+        return e('span', {
+            className: 'col-3',
+        }, this.props.hint);
     }
 
     render() {
@@ -93,13 +110,15 @@ class AIOptions extends React.Component {
                 ),
             ),
             e('div', {
-                className: 'row',
+                className: 'row align-items-center mb-1',
             },
                 e('div', {className: 'col-1'}),
-                ai_player_controls.bind(this)(1),
-                ai_player_controls.bind(this)(2),
+                this.ai_player_controls(1),
+                e('div', {className: 'col-1'}),
+                this.ai_player_controls(2),
                 e('div', {className: 'col-2'}),
-                e('div', {
+                this.hintButton(),
+                e('span', {
                     className: 'col-3',
                 }, 'Score: ' + this.props.score),
             ),

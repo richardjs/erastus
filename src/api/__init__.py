@@ -137,6 +137,7 @@ def think(state):
     state = p.stdout.read().strip().decode('utf-8')
 
     response = jsonify({
+        'action': action,
         'state': state,
         'log': log,
     })

@@ -8,7 +8,9 @@ class UI extends React.Component {
             holdAI: true,
             stateChange: false,
             waitingForAI: false,
+            waitingForHint: false,
             score: 'n\\a',
+            hint: null,
             iterations: localStorage.getItem('iterations') || 50000,
             workers: localStorage.getItem('workers') || 4,
             player1_ai: localStorage.getItem('player1_ai') ? true : false,
@@ -17,6 +19,7 @@ class UI extends React.Component {
 
         this.onAction = this.onAction.bind(this);
         this.onPlayerAIChange = this.onPlayerAIChange.bind(this);
+        this.handleHintClick = this.handleHintClick.bind(this);
         this.handleIterationsChange = this.handleIterationsChange.bind(this);
         this.handleWorkersChange = this.handleWorkersChange.bind(this);
         this.handleClick = this.handleClick.bind(this);
@@ -55,9 +58,12 @@ class UI extends React.Component {
                     player1_ai: this.state.player1_ai,
                     player2_ai: this.state.player2_ai,
                     waitingForAI: this.state.waitingForAI,
+                    waitingForHint: this.state.waitingForHint,
+                    hint: this.state.hint,
                     score: this.state.score,
                     handleIterationsChange: this.handleIterationsChange,
                     handleWorkersChange: this.handleWorkersChange,
+                    handleHintClick: this.handleHintClick,
                     onPlayerAIChange: this.onPlayerAIChange,
                 }),
             ),
@@ -100,6 +106,47 @@ class UI extends React.Component {
         }
     }
 
+    handleHintClick(e) {
+        console.log('requesting hint');
+        this.setState({waitingForHint: true});
+
+        e.target.blur();
+
+        fetch(API_URL + '/think/' + location.hash.slice(1), {
+            headers: [
+                ['Iterations', '200000'],
+                ['Workers', '8']
+            ]
+        })
+            .then(response => response.json())
+            .then(json => {
+                // TODO we should probably use a better way of cancelling the request
+                // right now, if a new hint is requested, this one will take precedence
+                if (!this.state.waitingForHint) {
+                    return;
+                }
+                console.log(json.log);
+
+                let logLines = json.log.split('\n');
+                let score = 'n\\a';
+                for (let i = 0; i < logLines.length; i++) {
+                    let line = logLines[i];
+                    if (!line.startsWith('score')) continue;
+
+                    score = line.split('\t').at(-1);
+                    break;
+                }
+
+                this.setState({
+                    score: score,
+                    hint: json.action,
+                    waitingForHint: false,
+                });
+
+            })
+            .catch(console.error)
+    }
+
     handleIterationsChange(e) {
         this.setState({iterations: e.target.value});
         localStorage.setItem('iterations', e.target.value);
@@ -128,7 +175,11 @@ class UI extends React.Component {
         if (!this.state.stateChange) {
             this.setState({holdAI: true});
         }
-        this.setState({stateChange: false});
+        this.setState({
+            stateChange: false,
+            waitingForHint: false,
+            hint: null,
+        });
 
         // When the hash changes, get the actions from the server
         this.setState({actions: []});
