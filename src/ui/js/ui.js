@@ -5,6 +5,7 @@ class UI extends React.Component {
         this.state = {
             actions: [],
             inputBuffer: [],
+            holdAI: true,
             waitingForAI: false,
             score: 'n\\a',
             iterations: localStorage.getItem('iterations') || 50000,
@@ -42,6 +43,7 @@ class UI extends React.Component {
                     inputBuffer: this.state.inputBuffer,
                     player1_ai: this.state.player1_ai,
                     player2_ai: this.state.player2_ai,
+                    holdAI: this.state.holdAI,
                     handleSpaceClick: this.handleSpaceClick,
                 }),
             ),
@@ -69,7 +71,10 @@ class UI extends React.Component {
 
     // User has entered an action using the Board component
     onAction(action) {
-        this.setState({actions: []});
+        this.setState({
+            actions: [],
+            holdAI: false,
+        });
 
         fetch(API_URL + '/act/' + location.hash.slice(1) + '/' + action)
             .then(response => response.json())
@@ -88,7 +93,7 @@ class UI extends React.Component {
             localStorage.removeItem(player_ai);
         }
 
-        if ('player'+turn()+'_ai' == player_ai) {
+        if (value && 'player'+turn()+'_ai' == player_ai) {
             this.aiMove();
         }
     }
@@ -123,7 +128,7 @@ class UI extends React.Component {
             .then(json => {
                 this.setState({actions: json.actions});
 
-                if (this.state['player'+turn()+'_ai']) {
+                if (!this.state.holdAI && this.state['player'+turn()+'_ai']) {
                     this.aiMove();
                 }
             })

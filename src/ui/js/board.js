@@ -44,7 +44,7 @@ class Board extends React.Component {
                 }
 
                 let active;
-                if (!this.props['player'+turn()+'_ai']) {
+                if (!this.props['player'+turn()+'_ai'] || this.props.holdAI) {
                     // Walk down the actionTree with the spaces already in inputBuffer
                     let activeSpaces = actionTree;
                     let inputi;
