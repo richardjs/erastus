@@ -29,7 +29,7 @@ class AIOptions extends React.Component {
                 e('button', {
                    className: 'btn btn-sm btn-secondary',
                    onClick: this.props.handleHintClick,
-                   disabled: this.props.waitingForHint,
+                   disabled: this.props.waitingForHint || this.props.waitingForAI,
                 },
                     'Hint'
                 ),
