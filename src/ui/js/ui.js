@@ -9,7 +9,7 @@ class UI extends React.Component {
             stateChange: false,
             waitingForAI: false,
             waitingForHint: false,
-            score: 'n\\a',
+            score: '',
             hint: null,
             hintSpaces: [],
             iterations: localStorage.getItem('iterations') || 50000,
@@ -130,7 +130,7 @@ class UI extends React.Component {
                 console.log(json.log);
 
                 let logLines = json.log.split('\n');
-                let score = 'n\\a';
+                let score = '';
                 for (let i = 0; i < logLines.length; i++) {
                     let line = logLines[i];
                     if (!line.startsWith('score')) continue;
@@ -177,7 +177,10 @@ class UI extends React.Component {
         // stateChange is set when the code itself changes the hash
         // so !stateChange means the user changed the hash (e.g. back button)
         if (!this.state.stateChange) {
-            this.setState({holdAI: true});
+            this.setState({
+                holdAI: true,
+                score: '',
+            });
         }
         this.setState({
             stateChange: false,
