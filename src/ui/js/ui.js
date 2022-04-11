@@ -6,6 +6,7 @@ class UI extends React.Component {
             actions: [],
             inputBuffer: [],
             holdAI: true,
+            stateChange: false,
             waitingForAI: false,
             score: 'n\\a',
             iterations: localStorage.getItem('iterations') || 50000,
@@ -79,6 +80,7 @@ class UI extends React.Component {
         fetch(API_URL + '/act/' + location.hash.slice(1) + '/' + action)
             .then(response => response.json())
             .then(json => {
+                this.setState({stateChange: true});
                 location.hash = json.state;
             })
             .catch(console.error);
@@ -120,6 +122,13 @@ class UI extends React.Component {
             return;
         }
         // TODO clear inputBuffer
+
+        // stateChange is set when the code itself changes the hash
+        // so !stateChange means the user changed the hash (e.g. back button)
+        if (!this.state.stateChange) {
+            this.setState({holdAI: true});
+        }
+        this.setState({stateChange: false});
 
         // When the hash changes, get the actions from the server
         this.setState({actions: []});
@@ -197,6 +206,7 @@ class UI extends React.Component {
                     score: score,
                     waitingForAI: false
                 });
+                this.setState({stateChange: true});
                 location.hash = json.state;
             })
             .catch(console.error)
