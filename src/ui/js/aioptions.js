@@ -1,6 +1,6 @@
 function ai_player_controls(n) {
     return e('div', {
-        className: 'form-check col-sm-3',
+        className: 'form-check col-3',
     },
         e('label', {
             htmlFor: 'player'+n+'_ai',
@@ -32,10 +32,10 @@ class AIOptions extends React.Component {
                 className: 'row',
             },
                 e('label', {
-                    className: 'form-label col-sm-2',
+                    className: 'form-label col-2',
                     htmlFor: 'iterations'
                 }, 'Iterations:'),
-                e('div', {className: 'col-sm-7'},
+                e('div', {className: 'col-7'},
                     e('input', {
                         type: 'range',
                         className: 'form-range',
@@ -46,7 +46,7 @@ class AIOptions extends React.Component {
                         onChange: this.props.handleIterationsChange,
                     }),
                 ),
-                e('div', {className: 'col-sm-3'},
+                e('div', {className: 'col-3'},
                     e('input', {
                         type: 'number',
                         className: 'form-control-sm',
@@ -64,10 +64,10 @@ class AIOptions extends React.Component {
                 className: 'row',
             },
                 e('label', {
-                    className: 'form-label col-sm-2',
+                    className: 'form-label col-2',
                     htmlFor: 'workers'
                 }, 'Workers:'),
-                e('div', {className: 'col-sm-7'},
+                e('div', {className: 'col-7'},
                     e('input', {
                         type: 'range',
                         className: 'form-range',
@@ -78,7 +78,7 @@ class AIOptions extends React.Component {
                         onChange: this.props.handleWorkersChange,
                     }),
                 ),
-                e('div', {className: 'col-sm-3'},
+                e('div', {className: 'col-3'},
                     e('input', {
                         type: 'number',
                         className: 'form-control-sm',
@@ -95,12 +95,12 @@ class AIOptions extends React.Component {
             e('div', {
                 className: 'row',
             },
-                e('div', {className: 'col-sm-1'}),
+                e('div', {className: 'col-1'}),
                 ai_player_controls.bind(this)(1),
                 ai_player_controls.bind(this)(2),
-                e('div', {className: 'col-sm-2'}),
+                e('div', {className: 'col-2'}),
                 e('div', {
-                    className: 'col-sm-3',
+                    className: 'col-3',
                 }, 'Score: ' + this.props.score),
             ),
         );

@@ -179,15 +179,19 @@ class UI extends React.Component {
                 console.log(json.log);
 
                 let logLines = json.log.split('\n');
+                let score = 'n\\a';
                 for (let i = 0; i < logLines.length; i++) {
                     let line = logLines[i];
                     if (!line.startsWith('score')) continue;
 
-                    let score = line.split('\t').at(-1);
-                    this.setState({score: score});
+                    score = line.split('\t').at(-1);
+                    break;
                 }
 
-                this.setState({waitingForAI: false});
+                this.setState({
+                    score: score,
+                    waitingForAI: false
+                });
                 location.hash = json.state;
             })
             .catch(console.error)
