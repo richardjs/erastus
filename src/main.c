@@ -12,6 +12,9 @@
 #include "state.h"
 
 
+#define TOP_ACTIONS 5
+
+
 enum Command {THINK, RANDOM, LIST_ACTIONS, ACT_AND_PRINT};
 
 
@@ -256,12 +259,31 @@ int main(int argc, char *argv[])
     results.stats.duration = (end.tv_sec - start.tv_sec)*1000 + (end.tv_usec - start.tv_usec)/1000;
 
     results.score = -INFINITY;
+    int top_actionis[TOP_ACTIONS];
+    memset(top_actionis, -1, sizeof(int) * TOP_ACTIONS);
     for (int i = 0; i < state.action_count; i++) {
         float score = -1 * results.nodes[i].value / results.nodes[i].visits;
 
         if (score >= results.score) {
             results.score = score;
             results.actioni = i;
+        }
+
+
+        for (int j = 0; j < TOP_ACTIONS; j++) {
+            if (top_actionis[j] < 0) {
+                top_actionis[j] = i;
+                break;
+            }
+
+            float s = -1 * results.nodes[top_actionis[j]].value / results.nodes[top_actionis[j]].visits;
+            if (score > s) {
+                for (int k = TOP_ACTIONS - 2; k >= j ; k--) {
+                    top_actionis[k+1] = top_actionis[k];
+                }
+                top_actionis[j] = i;
+                break;
+            }
         }
     }
 
@@ -280,6 +302,12 @@ int main(int argc, char *argv[])
             1000 * results.stats.iterations / results.stats.duration : 0);
     fprintf(stderr, "tree size:\t%ld MiB\n",
         results.stats.tree_bytes / 1024 / 1024);
+
+    for (int i = 1; i < TOP_ACTIONS; i++) {
+        Action_to_string(&state.actions[top_actionis[i]], action_string);
+        float score = -1 * results.nodes[top_actionis[i]].value / results.nodes[top_actionis[i]].visits;
+        fprintf(stderr, "alt:\t%.2f\t%s\n", score, action_string);
+    }
 
     struct State after = state;
     State_act(&after, &state.actions[results.actioni]);
