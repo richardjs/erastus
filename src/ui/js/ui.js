@@ -147,7 +147,7 @@ class UI extends React.Component {
                     hintSpaces: json.action.split(/\&|-|\+/).map(coordsToSpace),
                     waitingForHint: false,
                 });
-                scoreCache[location.hash] = score;
+                //scoreCache[location.hash] = score;
             })
             .catch(console.error)
     }

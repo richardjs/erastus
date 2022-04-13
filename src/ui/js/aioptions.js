@@ -120,6 +120,7 @@ class AIOptions extends React.Component {
                 this.hintButton(),
                 e('span', {
                     className: 'col-3',
+                    style: this.props.hint ? {color: 'green'} : {},
                 }, 'Score: ' + this.props.score),
             ),
         );
