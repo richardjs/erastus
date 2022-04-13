@@ -1,3 +1,5 @@
+let scoreCache = {};
+
 class UI extends React.Component {
     constructor(props) {
         super(props);
@@ -145,8 +147,7 @@ class UI extends React.Component {
                     hintSpaces: json.action.split(/\&|-|\+/).map(coordsToSpace),
                     waitingForHint: false,
                 });
-
-
+                scoreCache[location.hash] = score;
             })
             .catch(console.error)
     }
@@ -177,9 +178,13 @@ class UI extends React.Component {
         // stateChange is set when the code itself changes the hash
         // so !stateChange means the user changed the hash (e.g. back button)
         if (!this.state.stateChange) {
+            let score = '';
+            if (location.hash in scoreCache) {
+                score = scoreCache[location.hash];
+            }
             this.setState({
                 holdAI: true,
-                score: '',
+                score: score,
             });
         }
         this.setState({
@@ -252,7 +257,7 @@ class UI extends React.Component {
                 console.log(json.log);
 
                 let logLines = json.log.split('\n');
-                let score = 'n\\a';
+                let score = '';
                 for (let i = 0; i < logLines.length; i++) {
                     let line = logLines[i];
                     if (!line.startsWith('score')) continue;
@@ -263,10 +268,13 @@ class UI extends React.Component {
 
                 this.setState({
                     score: score,
-                    waitingForAI: false
+                    waitingForAI: false,
+                    stateChange: true,
                 });
-                this.setState({stateChange: true});
+
+                scoreCache[location.hash] = score
                 location.hash = json.state;
+                scoreCache[location.hash] = score
             })
             .catch(console.error)
     }
