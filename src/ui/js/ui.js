@@ -72,7 +72,7 @@ class UI extends React.Component {
                 }),
             ),
             e('div', {className: 'row mt-4'},
-                e('div', {className: 'col', style: {padding: '0'}},
+                e('div', {className: 'col'},
                     e('button', {
                         className: 'btn btn-danger',
                         style: {width: '100%'},
