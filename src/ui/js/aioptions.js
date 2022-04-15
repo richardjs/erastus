@@ -56,9 +56,9 @@ class AIOptions extends React.Component {
                     e('input', {
                         type: 'range',
                         className: 'form-range',
-                        min: 10000,
+                        min: 1000,
                         max: 200000,
-                        step: 10000,
+                        step: 1000,
                         value: this.props.iterations,
                         onChange: this.props.handleIterationsChange,
                     }),

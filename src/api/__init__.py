@@ -6,7 +6,7 @@ from flask import abort, Flask, jsonify, request, Response
 ERASTUS = './erastus'
 
 MAX_ITERATIONS = 200000
-MIN_ITERATIONS = 10000
+MIN_ITERATIONS = 1000
 MAX_WORKERS = 8
 MIN_WORKERS = 1
 
