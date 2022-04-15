@@ -207,7 +207,8 @@ class UI extends React.Component {
                 score = scoreCache[location.hash];
             }
             this.setState({
-                holdAI: true,
+                // Don't hold the AI for the start state
+                holdAI: location.hash != '#0000000000000000000000000xxxxxxxx1',
                 score: score,
             });
         }
