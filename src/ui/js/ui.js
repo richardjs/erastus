@@ -72,10 +72,34 @@ class UI extends React.Component {
                 }),
             ),
             e('div', {className: 'row mt-4'},
-                e('button', {
-                    className: 'btn btn-danger',
-                    onClick: () => {if (confirm('New game?')) window.location = ''},
-                }, "New game"),
+                e('div', {className: 'col', style: {padding: '0'}},
+                    e('button', {
+                        className: 'btn btn-danger',
+                        style: {width: '100%'},
+                        onClick: () => {
+                            if (confirm('New game?')) window.location = ''
+                        },
+                    }, "New game"),
+                ),
+                e('div', {className: 'col'},
+                    e('button', {
+                        className: 'btn btn-danger',
+                        style: {width: '100%'},
+                        onClick: () => {
+                            if (confirm('New game?')) {
+                                localStorage.removeItem('player1_ai');
+                                localStorage.removeItem('player2_ai');
+                                if (this.state.player1_ai) {
+                                    localStorage.setItem('player2_ai', this.state.player1_ai);
+                                }
+                                if (this.state.player2_ai) {
+                                    localStorage.setItem('player1_ai', this.state.player2_ai);
+                                }
+                                window.location = ''
+                            }
+                        },
+                    }, "New game (switch sides)"),
+                ),
             ),
         );
     }
