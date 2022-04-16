@@ -1,8 +1,40 @@
 let scoreCache = {};
 
+class PuzzleControls extends React.Component {
+    render() {
+        if (this.props.puzzleid === null) {
+            return e('div', {className: 'row mt-4'},
+                e('button', {
+                    className: 'btn btn-dark',
+                    onClick: this.props.onPuzzleRequest,
+                }, 'Give me a puzzle!'),
+            );
+        } else {
+            return e('div', {className: 'row mt-4'},
+                e('div', {className: 'col ps-0'},
+                    e('button', {
+                        className: 'btn btn-success',
+                        style: {width: '100%'},
+                        onClick: this.props.onPuzzleSolve
+                    }, "I solved puzzle " + (this.props.puzzleid + 1)),
+                ),
+                e('div', {className: 'col pe-0'},
+                    e('button', {
+                        className: 'btn btn-dark',
+                        style: {width: '100%'},
+                        onClick: this.props.onPuzzleSkip
+                    }, "Skip puzzle"),
+                ),
+            )
+        }
+    }
+}
+
 class UI extends React.Component {
     constructor(props) {
         super(props);
+
+        let solvedPuzzles = JSON.parse(localStorage.getItem('solvedPuzzles'));
 
         this.state = {
             actions: [],
@@ -18,10 +50,16 @@ class UI extends React.Component {
             workers: localStorage.getItem('workers') || 4,
             player1_ai: localStorage.getItem('player1_ai') ? true : false,
             player2_ai: localStorage.getItem('player2_ai') ? true : false,
+            puzzleid: null,
+            puzzles: [],
+            solvedPuzzles: solvedPuzzles || [],
         };
 
         this.onAction = this.onAction.bind(this);
         this.onPlayerAIChange = this.onPlayerAIChange.bind(this);
+        this.onPuzzleRequest = this.onPuzzleRequest.bind(this);
+        this.onPuzzleSolve = this.onPuzzleSolve.bind(this);
+        this.onPuzzleSkip = this.onPuzzleSkip.bind(this);
         this.handleHintClick = this.handleHintClick.bind(this);
         this.handleIterationsChange = this.handleIterationsChange.bind(this);
         this.handleWorkersChange = this.handleWorkersChange.bind(this);
@@ -35,6 +73,13 @@ class UI extends React.Component {
 
     componentDidMount() {
         this.handleHashChange();
+
+        fetch(API_URL + '/puzzles')
+            .then(response => response.json())
+            .then(json => {
+                this.setState({puzzles: json});
+            })
+            .catch(console.error);
     }
 
     render() {
@@ -72,7 +117,7 @@ class UI extends React.Component {
                 }),
             ),
             e('div', {className: 'row mt-4'},
-                e('div', {className: 'col'},
+                e('div', {className: 'col ps-0'},
                     e('button', {
                         className: 'btn btn-danger',
                         style: {width: '100%'},
@@ -81,7 +126,7 @@ class UI extends React.Component {
                         },
                     }, "New game"),
                 ),
-                e('div', {className: 'col'},
+                e('div', {className: 'col pe-0'},
                     e('button', {
                         className: 'btn btn-danger',
                         style: {width: '100%'},
@@ -101,6 +146,12 @@ class UI extends React.Component {
                     }, "New game (switch sides)"),
                 ),
             ),
+            e(PuzzleControls, {
+                puzzleid: this.state.puzzleid,
+                onPuzzleRequest: this.onPuzzleRequest,
+                onPuzzleSolve: this.onPuzzleSolve,
+                onPuzzleSkip: this.onPuzzleSkip,
+            }),
         );
     }
 
@@ -210,6 +261,7 @@ class UI extends React.Component {
                 // Don't hold the AI for the start state
                 holdAI: location.hash != '#0000000000000000000000000xxxxxxxx1',
                 score: score,
+                puzzleid: null,
             });
         }
         this.setState({
@@ -302,6 +354,49 @@ class UI extends React.Component {
                 scoreCache[location.hash] = score
             })
             .catch(console.error)
+    }
+
+    onPuzzleRequest(e, skip) {
+        skip = skip || 0;
+        let id;
+        for (id = skip; id < this.state.puzzles.length; id++) {
+            if (this.state.solvedPuzzles[id] !== true) {
+                break;
+            }
+        }
+        if (id == this.state.puzzles.length) {
+            id = Math.floor(Math.random() * this.state.puzzles.length);
+        }
+
+        let puzzleState = this.state.puzzles[id]
+        let player1_ai = puzzleState.slice(-1) == '2'
+        let player2_ai = puzzleState.slice(-1) == '1'
+
+        this.setState({
+            puzzleid: id,
+            player1_ai: player1_ai,
+            player2_ai: player2_ai,
+            iterations: 50000,
+            workers: 4,
+            stateChange: true,
+        });
+        localStorage.removeItem('player1_ai');
+        localStorage.removeItem('player2_ai');
+
+        location.hash = puzzleState;
+    }
+
+    onPuzzleSolve() {
+        let solvedPuzzles = this.state.solvedPuzzles;
+        solvedPuzzles[this.state.puzzleid] = true;
+        localStorage.setItem('solvedPuzzles', JSON.stringify(solvedPuzzles));
+        this.setState({solvedPuzzles: solvedPuzzles});
+
+        this.onPuzzleRequest();
+    }
+
+    onPuzzleSkip(e) {
+        this.onPuzzleRequest(e, this.state.puzzleid + 1);
     }
 }
 

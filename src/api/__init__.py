@@ -146,3 +146,39 @@ def think(state):
     response.headers['Access-Control-Allow-Headers']='iterations, workers'
 
     return response
+
+
+@app.route('/puzzles', methods=['OPTIONS'])
+def puzzles_options():
+    response = Response()
+    response.headers['Access-Control-Allow-Origin'] = '*'
+
+    return response
+
+
+@app.route('/puzzles')
+def puzzles():
+    try:
+        response = jsonify([
+            line.strip() for line in open('puzzles.txt').readlines()
+        ])
+    except:
+        return "can't read puzzles.txt"
+
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    return response
+
+
+@app.route('/submit/<state>', methods=['OPTIONS'])
+def submit_options():
+    response = Response()
+    response.headers['Access-Control-Allow-Origin'] = '*'
+
+    return response
+
+
+@app.route('/submit/<state>')
+def submit(state):
+    check_state('0000000000000000000000000c2c4xxxx2')
+    open('puzzles.txt', 'a').write(state + '\n')
+    return 'ok'
