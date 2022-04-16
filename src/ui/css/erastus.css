@@ -8,7 +8,13 @@ body {
 
 .space {
     border: none;
-    border: 2px solid #ddd;
+    border: 2px solid;
+    border-color: #ddd;
+}
+
+.space:disabled {
+    color: #888;
+    border-color: #ddd;
 }
 
 .level-0 {

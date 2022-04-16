@@ -94,7 +94,6 @@ class Board extends React.Component {
 
         return e('div', null,
             e('div', {className: 'board'}, rows),
-            e('div', null, 'Turn: ' + (this.props.notation[33] === '1' ? 'X' : 'O')),
         );
     }
 }
