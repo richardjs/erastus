@@ -180,7 +180,10 @@ def submit_options():
 @app.route('/submit/<state>')
 def submit(state):
     check_state(state)
-    open('puzzles.txt', 'a').write(state + '\n')
+
+    f = open('puzzles.txt', 'a')
+    f.write(state + '\n')
+    f.close()
 
     response = Response('ok')
     response.headers['Access-Control-Allow-Origin'] = '*'

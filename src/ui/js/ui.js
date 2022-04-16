@@ -434,9 +434,6 @@ class UI extends React.Component {
                 if (response.status === 200) {
                     alert('Submitted!');
                 }
-                else {
-                    console.log(response);
-                }
             });
     }
 }
