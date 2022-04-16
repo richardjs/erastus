@@ -179,6 +179,10 @@ def submit_options():
 
 @app.route('/submit/<state>')
 def submit(state):
-    check_state('0000000000000000000000000c2c4xxxx2')
+    check_state(state)
     open('puzzles.txt', 'a').write(state + '\n')
-    return 'ok'
+
+    response = Response('ok')
+    response.headers['Access-Control-Allow-Origin'] = '*'
+
+    return response

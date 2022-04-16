@@ -2,12 +2,26 @@ let scoreCache = {};
 
 class PuzzleControls extends React.Component {
     render() {
+        let unsolvedCount;
+        unsolvedCount = this.props.puzzles.length;
+        unsolvedCount -= this.props.solvedPuzzles.filter(x => x == true).length;
+
         if (this.props.puzzleid === null) {
             return e('div', {className: 'row mt-4'},
-                e('button', {
-                    className: 'btn btn-dark',
-                    onClick: this.props.onPuzzleRequest,
-                }, 'Give me a puzzle!'),
+                e('div', {className: 'col-8 ps-0'},
+                    e('button', {
+                        className: 'btn btn-secondary',
+                        onClick: this.props.onPuzzleRequest,
+                        style: {width: '100%'},
+                    }, unsolvedCount > 0 ? 'Load puzzle ('+unsolvedCount+' unsolved)' : 'Load puzzle (_ unsolved)'),
+                ),
+                e('div', {className: 'col-4 pe-0'},
+                    e('button', {
+                        className: 'btn btn-dark',
+                        onClick: this.props.onPuzzleSubmit,
+                        style: {width: '100%'},
+                    }, 'Submit puzzle'),
+                ),
             );
         } else {
             return e('div', {className: 'row mt-4'},
@@ -60,6 +74,7 @@ class UI extends React.Component {
         this.onPuzzleRequest = this.onPuzzleRequest.bind(this);
         this.onPuzzleSolve = this.onPuzzleSolve.bind(this);
         this.onPuzzleSkip = this.onPuzzleSkip.bind(this);
+        this.onPuzzleSubmit = this.onPuzzleSubmit.bind(this);
         this.handleHintClick = this.handleHintClick.bind(this);
         this.handleIterationsChange = this.handleIterationsChange.bind(this);
         this.handleWorkersChange = this.handleWorkersChange.bind(this);
@@ -148,9 +163,12 @@ class UI extends React.Component {
             ),
             e(PuzzleControls, {
                 puzzleid: this.state.puzzleid,
+                puzzles: this.state.puzzles,
+                solvedPuzzles: this.state.solvedPuzzles,
                 onPuzzleRequest: this.onPuzzleRequest,
                 onPuzzleSolve: this.onPuzzleSolve,
                 onPuzzleSkip: this.onPuzzleSkip,
+                onPuzzleSubmit: this.onPuzzleSubmit,
             }),
         );
     }
@@ -356,7 +374,11 @@ class UI extends React.Component {
             .catch(console.error)
     }
 
-    onPuzzleRequest(e, skip) {
+    onPuzzleRequest(e, skip, noConfirm) {
+        if (!noConfirm && !confirm('Load puzzle?')) {
+            return;
+        }
+
         skip = skip || 0;
         let id;
         for (id = skip; id < this.state.puzzles.length; id++) {
@@ -387,16 +409,35 @@ class UI extends React.Component {
     }
 
     onPuzzleSolve() {
+        if (!confirm('Figured it out?')) {
+            return;
+        }
         let solvedPuzzles = this.state.solvedPuzzles;
         solvedPuzzles[this.state.puzzleid] = true;
         localStorage.setItem('solvedPuzzles', JSON.stringify(solvedPuzzles));
         this.setState({solvedPuzzles: solvedPuzzles});
 
-        this.onPuzzleRequest();
+        this.onPuzzleRequest(null, null, true);
     }
 
     onPuzzleSkip(e) {
-        this.onPuzzleRequest(e, this.state.puzzleid + 1);
+        this.onPuzzleRequest(e, this.state.puzzleid + 1, true);
+    }
+
+    onPuzzleSubmit(e) {
+        if (!confirm('Add current board to the puzzle database?')) {
+            return;
+        }
+
+        fetch(API_URL + '/submit/' + location.hash.slice(1))
+            .then(response => {
+                if (response.status === 200) {
+                    alert('Submitted!');
+                }
+                else {
+                    console.log(response);
+                }
+            });
     }
 }
 
