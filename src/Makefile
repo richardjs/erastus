@@ -1,11 +1,18 @@
+all: erastus
+
+
 CLAGS=-std=c99 -Wall -O3
 LDFLAGS=-lm
 
 
-objects=state.o stateio.o layout.o mcts.o minimax.o
+objects=layout.o mcts.o minimax.o state.o stateio.o
 
 
-all: erastus
+layout.o: layout.h
+mcts.o: mcts.h state.h
+minimax.o: minimax.h state.h
+state.o: bitops.h layout.h state.h
+stateio.o: state.h
 
 
 erastus: $(objects) main.o
@@ -29,6 +36,7 @@ clean:
 	rm -f *.o
 	rm -f test
 	rm -f benchmark
+	rm -f erastus
 
 
 .phony: all api api-dev clean
