@@ -4,7 +4,7 @@ services:
       context: src/
       dockerfile: Dockerfile-api
     volumes:
-      - ./puzzles.txt:/opt/erastus/puzzles.txt:rw
+      - ./src/puzzles.txt:/opt/erastus/puzzles.txt:rw
 
   ui:
     build:
