@@ -2,4 +2,7 @@ FROM nginx
 COPY nginx-ui.conf /etc/nginx/conf.d/default.conf
 WORKDIR /usr/share/nginx/html/
 COPY ui .
-RUN echo API_URL = \'/api\' > js/config.js
+RUN echo API_URL = \'/api\' >> js/config.js
+
+COPY ui-env-config.sh /docker-entrypoint.d/
+RUN chmod +x /docker-entrypoint.d/ui-env-config.sh
