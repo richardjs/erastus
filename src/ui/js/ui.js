@@ -62,6 +62,10 @@ class UI extends React.Component {
             hintSpaces: [],
             iterations: localStorage.getItem('iterations') || 50000,
             workers: localStorage.getItem('workers') || 4,
+            max_iterations: null,
+            min_iterations: null,
+            max_workers: null,
+            min_workers: null,
             player1_ai: localStorage.getItem('player1_ai') ? true : false,
             player2_ai: localStorage.getItem('player2_ai') ? true : false,
             puzzleid: null,
@@ -88,6 +92,18 @@ class UI extends React.Component {
 
     componentDidMount() {
         this.handleHashChange();
+
+        fetch(API_URL + '/limits')
+            .then(response => response.json())
+            .then(json => {
+                this.setState({
+                    max_iterations: parseInt(json.MAX_ITERATIONS),
+                    min_iterations: parseInt(json.MIN_ITERATIONS),
+                    max_workers: parseInt(json.MAX_WORKERS),
+                    min_workers: parseInt(json.MIN_WORKERS),
+                });
+            })
+            .catch(console.error);
 
         fetch(API_URL + '/puzzles')
             .then(response => response.json())
@@ -117,6 +133,16 @@ class UI extends React.Component {
             ),
             e('div', {className: 'row mt-4'},
                 e(AIOptions, {
+                    waitingForLimits: (
+                        this.props.max_iterations === null ||
+                        this.props.min_iterations === null ||
+                        this.props.max_workers === null ||
+                        this.props.min_workers === null
+                    ),
+                    max_iterations: this.state.max_iterations,
+                    min_iterations: this.state.min_iterations,
+                    max_workers: this.state.max_workers,
+                    min_workers: this.state.min_workers,
                     iterations: this.state.iterations,
                     workers: this.state.workers,
                     player1_ai: this.state.player1_ai,

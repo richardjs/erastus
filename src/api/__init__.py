@@ -99,6 +99,30 @@ def act(state, action):
     return response
 
 
+@app.route('/limits', methods=['OPTIONS'])
+def limits_options():
+    response = Response()
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Headers'] = 'iterations, workers'
+
+    return response
+
+
+@app.route('/limits')
+def limits():
+    response = jsonify({
+        'MAX_ITERATIONS': MAX_ITERATIONS,
+        'MIN_ITERATIONS': MIN_ITERATIONS,
+        'MAX_WORKERS': MAX_WORKERS,
+        'MIN_WORKERS': MIN_WORKERS,
+    })
+
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Headers'] = 'Iterations, Move'
+
+    return response
+
+
 @app.route('/think/<state>', methods=['OPTIONS'])
 def think_options(state):
     response = Response()
