@@ -1,7 +1,7 @@
 from os import environ
 from subprocess import Popen, PIPE
 
-from flask import abort, Flask, jsonify, request, Response
+from flask import abort, Flask, jsonify, redirect, request, Response
 
 
 ERASTUS = './erastus'
@@ -10,6 +10,8 @@ MAX_ITERATIONS = int(environ.get('MAX_ITERATIONS', 200000))
 MIN_ITERATIONS = int(environ.get('MIN_ITERATIONS', 1000))
 MAX_WORKERS = int(environ.get('MAX_WORKERS', 8))
 MIN_WORKERS = int(environ.get('MIN_WORKERS', 1))
+
+UI_PATH = environ.get('UI_PATH', '/ui')
 
 
 app = Flask(__name__)
@@ -214,3 +216,8 @@ def submit(state):
     response.headers['Access-Control-Allow-Origin'] = '*'
 
     return response
+
+
+@app.route('/')
+def redirect_to_ui():
+    return redirect(UI_PATH)

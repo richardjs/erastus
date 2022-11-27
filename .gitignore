@@ -2,4 +2,5 @@
 src/erastus
 src/test
 src/benchmark
+src/fly.toml
 __pycache__/
