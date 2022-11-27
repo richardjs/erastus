@@ -1,3 +1,4 @@
+from os import environ
 from subprocess import Popen, PIPE
 
 from flask import abort, Flask, jsonify, request, Response
@@ -5,10 +6,10 @@ from flask import abort, Flask, jsonify, request, Response
 
 ERASTUS = './erastus'
 
-MAX_ITERATIONS = 200000
-MIN_ITERATIONS = 1000
-MAX_WORKERS = 8
-MIN_WORKERS = 1
+MAX_ITERATIONS = int(environ.get('MAX_ITERATIONS', 200000))
+MIN_ITERATIONS = int(environ.get('MIN_ITERATIONS', 1000))
+MAX_WORKERS = int(environ.get('MAX_WORKERS', 8))
+MIN_WORKERS = int(environ.get('MIN_WORKERS', 1))
 
 
 app = Flask(__name__)
@@ -112,7 +113,7 @@ def think(state):
     state = state.lower()
     check_state(state)
 
-    iterations = 10000
+    iterations = int((MIN_ITERATIONS + MAX_ITERATIONS) / 2)
     workers = 1
 
     if 'Iterations' in request.headers:
