@@ -25,7 +25,7 @@ benchmark: $(objects)
 
 
 api: erastus
-	gunicorn -b 0.0.0.0:5000 -w 8 api:app
+	gunicorn -b 0.0.0.0:5000 -w $(if $(GUNICORN_WORKERS),$(GUNICORN_WORKERS),8) api:app
 
 
 api-dev: erastus
