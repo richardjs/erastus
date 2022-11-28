@@ -26,6 +26,14 @@ app = ""
     handlers = ["tls", "http"]
     port = 443
 
+  [[services.http_checks]]
+    interval = "10s"
+    grace_period = "5s"
+    method = "get"
+    path = "/limits"
+    protocol = "http"
+    timeout = "2s"
+
 [services.concurrency]
   type = "requests"
   hard_limit = 1
