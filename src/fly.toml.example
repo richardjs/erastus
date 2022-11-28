@@ -4,12 +4,10 @@ app = ""
   dockerfile = "Dockerfile-fly"
 
 [env]
-  # Scaled to run on a 256MB RAM shared-cpu-1x instance
   MAX_ITERATIONS = 40000
   MAX_WORKERS = 1
-  GUNICORN_WORKERS = 1
-
   UI_PATH = "/ui/index.html"
+  GUNICORN_WORKERS = 1
 
 [[statics]]
   guest_path = "/opt/erastus/ui"
@@ -18,7 +16,6 @@ app = ""
 [[services]]
   internal_port = 5000
   protocol = "tcp"
-  hard_limit = 1
 
   [[services.ports]]
     force_https = true
@@ -28,3 +25,8 @@ app = ""
   [[services.ports]]
     handlers = ["tls", "http"]
     port = 443
+
+[services.concurrency]
+  type = "requests"
+  hard_limit = 1
+  soft_limit = 1
