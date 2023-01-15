@@ -90,7 +90,7 @@ void random_action(const struct State *state)
 
 int main(int argc, char *argv[])
 {
-    fprintf(stderr, "Erastus v1.0 (built %s %s)\n", __DATE__, __TIME__);
+    fprintf(stderr, "Erastus v1.1 (built %s %s)\n", __DATE__, __TIME__);
 
     time_t seed = time(NULL);
     srand(seed);

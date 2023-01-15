@@ -1,7 +1,7 @@
 all: erastus
 
 
-CFLAGS=-std=c99 -Wall -O3
+CFLAGS=-O3 -Wall
 LDFLAGS=-lm
 
 
